@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Raiko/Common/Defines.h"
+#include "Axion/Common/Defines.h"
 #include <chrono>
 #include <ctime>
 #include <format>
@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_map>
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 /**
  * @brief Lightweight thread-safe logger for Raiko engine.
@@ -124,54 +124,54 @@ private:
     std::mutex    _mtx;
 };
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END
 
 // -------------------------------------------------
 // Macros for convenience
 // -------------------------------------------------
 
-#ifdef RAIKO_DEBUG
+#ifdef AXION_DEBUG
 
-#define RAIKO_LOG_INFO( module, fmt, ... ) \
-    Raiko::Logger::log(                    \
-        Raiko::Logger::Level::Info,        \
+#define AXION_LOG_INFO( module, fmt, ... ) \
+    Axion::Logger::log(                    \
+        Axion::Logger::Level::Info,        \
         module,                            \
         std::vformat( fmt, std::make_format_args( __VA_ARGS__ ) ) )
 
-#define RAIKO_LOG_WARN( module, fmt, ... )                         \
-    Raiko::Logger::log(                                            \
-        Raiko::Logger::Level::Warn,                                \
+#define AXION_LOG_WARN( module, fmt, ... )                         \
+    Axion::Logger::log(                                            \
+        Axion::Logger::Level::Warn,                                \
         module,                                                    \
         std::vformat( fmt, std::make_format_args( __VA_ARGS__ ) ), \
         __FILE__,                                                  \
         __LINE__,                                                  \
         __func__ )
 
-#define RAIKO_LOG_ERROR( module, fmt, ... )                        \
-    Raiko::Logger::log(                                            \
-        Raiko::Logger::Level::Error,                               \
+#define AXION_LOG_ERROR( module, fmt, ... )                        \
+    Axion::Logger::log(                                            \
+        Axion::Logger::Level::Error,                               \
         module,                                                    \
         std::vformat( fmt, std::make_format_args( __VA_ARGS__ ) ), \
         __FILE__,                                                  \
         __LINE__,                                                  \
         __func__ )
 
-#define RAIKO_LOG_ASSERT( cond, module, msg, ... )         \
+#define AXION_LOG_ASSERT( cond, module, msg, ... )         \
     do                                                     \
     {                                                      \
         if ( !( cond ) )                                   \
         {                                                  \
-            RAIKO_LOG_ERROR( module, msg, ##__VA_ARGS__ ); \
-            Raiko::Logger::flush();                        \
+            AXION_LOG_ERROR( module, msg, ##__VA_ARGS__ ); \
+            Axion::Logger::flush();                        \
             std::abort();                                  \
         }                                                  \
     } while ( 0 )
 
 #else
 
-#define RAIKO_LOG_INFO( ... ) ( (void)0 )
-#define RAIKO_LOG_WARN( ... ) ( (void)0 )
-#define RAIKO_LOG_ERROR( ... ) ( (void)0 )
-#define RAIKO_LOG_ASSERT( cond, module, msg, ... ) ( (void)0 )
+#define AXION_LOG_INFO( ... ) ( (void)0 )
+#define AXION_LOG_WARN( ... ) ( (void)0 )
+#define AXION_LOG_ERROR( ... ) ( (void)0 )
+#define AXION_LOG_ASSERT( cond, module, msg, ... ) ( (void)0 )
 
 #endif

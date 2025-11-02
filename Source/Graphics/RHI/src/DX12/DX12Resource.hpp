@@ -1,10 +1,10 @@
 #pragma once
 #include "DX12Device.hpp"
-#include "Raiko/Common/Math.h"
-#include "Raiko/Graphics/RHI/Resource.h"
+#include "Axion/Common/Math.h"
+#include "Axion/Graphics/RHI/Resource.h"
 #include "StateTracking.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -95,4 +95,4 @@ private:
 
 } // namespace Graphics::RHI
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

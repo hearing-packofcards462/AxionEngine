@@ -1,6 +1,6 @@
 #include "GLFW.hpp"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -20,13 +20,13 @@ GLFWWindow::GLFWWindow( const Settings& settings )
     if ( !_hWnd )
     {
         glfwTerminate();
-        RAIKO_LOG_ERROR( Logger::Module::GFX, "[FATAL] Failed to create GLFW window" );
+        AXION_LOG_ERROR( Logger::Module::GFX, "[FATAL] Failed to create GLFW window" );
     }
 
     _initialized = true;
 
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Window for Platform GLFW Created Successfully" );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Window Size: \n Width = {} \n Height = {} \n", _setts.size.width, _setts.size.height );
+    AXION_LOG_INFO( Logger::Module::GFX, "Window for Platform GLFW Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Window Size: \n Width = {} \n Height = {} \n", _setts.size.width, _setts.size.height );
 
     if ( _setts.centered )
     {
@@ -51,7 +51,7 @@ GLFWWindow::GLFWWindow( const Settings& settings )
 }
 
 GLFWWindow::~GLFWWindow() {
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Destroying Platform GLFW Window" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Destroying Platform GLFW Window" );
     glfwDestroyWindow( _hWnd );
 }
 
@@ -170,4 +170,4 @@ void GLFWWindow::setCallbacksFunctions() {
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

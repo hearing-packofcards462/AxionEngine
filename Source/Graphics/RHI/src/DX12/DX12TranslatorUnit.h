@@ -1,8 +1,8 @@
 #pragma once
-#include "Raiko/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Common.h"
 #include <array>
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 namespace Graphics::RHI {
 // Translates engine flags to DirectX12 types
 namespace DX12Translator {
@@ -347,4 +347,4 @@ constexpr D3D12_RESOURCE_STATES get( ResourceState s ) {
 
 } // namespace DX12Translator
 } // namespace Graphics::RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

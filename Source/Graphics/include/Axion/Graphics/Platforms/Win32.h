@@ -1,8 +1,8 @@
 #pragma once
-#include "Raiko/Graphics/Platforms/Window.h"
+#include "Axion/Graphics/Platforms/Window.h"
 #include <assert.h>
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -38,4 +38,4 @@ WindowHandle createWindowForWin32( HINSTANCE hInstance, const WindowSettings& se
 
 } // namespace Renderer
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

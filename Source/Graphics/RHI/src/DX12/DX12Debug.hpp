@@ -1,7 +1,7 @@
 #pragma once
-#include "Raiko/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Common.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI::Debug {
 
@@ -29,7 +29,7 @@ inline std::string getLastDXGIMessage() {
 
 } // namespace Graphics::RHI::Debug
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END
 
 #define DX_CHECK( x )                                                      \
     do                                                                     \
@@ -37,12 +37,12 @@ RAIKO_NAMESPCE_END
         HRESULT hr__ = ( x );                                              \
         if ( FAILED( hr__ ) )                                              \
         {                                                                  \
-            std::string dxgiMsg = Raiko::Graphics::RHI::Debug::getLastDXGIMessage(); \
-            RAIKO_LOG_ERROR( Raiko::Logger::Module::RHI,                   \
+            std::string dxgiMsg = Axion::Graphics::RHI::Debug::getLastDXGIMessage(); \
+            AXION_LOG_ERROR( Axion::Logger::Module::RHI,                   \
                              "DirectX12 error: 0x{:X} DXGI Layer: {}",     \
                              hr__,                                         \
                              dxgiMsg );                                    \
-            Raiko::Logger::flush();                                        \
+            Axion::Logger::flush();                                        \
             abort();                                                       \
         }                                                                  \
     } while ( 0 )

@@ -1,7 +1,7 @@
 #include "StateTracking.h"
 #include <algorithm>
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -43,4 +43,4 @@ ResourceState ResourceStateTracker::getState( uint mip, uint layer ) const {
 }
 
 } // namespace RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

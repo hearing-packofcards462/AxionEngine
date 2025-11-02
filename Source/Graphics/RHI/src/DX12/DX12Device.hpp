@@ -1,8 +1,8 @@
 #pragma once
 #include "DX12DescriptorHeap.h"
-#include "Raiko/Graphics/RHI/DX12.h"
+#include "Axion/Graphics/RHI/DX12.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -124,4 +124,4 @@ private:
 };
 
 } // namespace Graphics::RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

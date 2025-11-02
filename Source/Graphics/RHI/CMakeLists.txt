@@ -1,5 +1,5 @@
 # /////////////////////////////////////////////////////////////////////////////
-# Raikō Engine Graphics::RHI Lower module
+# Axion Engine Graphics::RHI submodule
 # /////////////////////////////////////////////////////////////////////////////
 
 file(GLOB RHI_SOURCES
@@ -13,10 +13,10 @@ file(GLOB RHI_SOURCES
     "src/*.cpp"
 )
 
-add_library(RaikoRHI STATIC ${RHI_SOURCES})
+add_library(AxionRHI STATIC ${RHI_SOURCES})
 
 
-target_include_directories(RaikoRHI
+target_include_directories(AxionRHI
 PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/include   
 ${CMAKE_SOURCE_DIR}/ThirdParty/Directx/include    
@@ -25,7 +25,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # Link system libraries
-target_link_libraries(RaikoRHI
+target_link_libraries(AxionRHI
 PUBLIC
 # Direct X12
 dxgi.lib
@@ -35,11 +35,11 @@ user32.lib
 dxguid.lib
 # Vulkan
 #Internal Modules
-RaikoCommon
+AxionCommon
 )
 
 # Si quieres flags específicos por backend
 if(BUILD_GLFW)
-    target_link_libraries(RaikoRHI PUBLIC glfw )
-    target_compile_definitions(RaikoRHI PRIVATE BUILD_GLFW)
+    target_link_libraries(AxionRHI PUBLIC glfw )
+    target_compile_definitions(AxionRHI PRIVATE BUILD_GLFW)
 endif()

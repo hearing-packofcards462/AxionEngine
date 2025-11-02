@@ -131,7 +131,7 @@
 //                                    const UniformArenaDesc& desc)
 //     : _device(device), _resources(&resources), _desc(desc)
 // {
-//     RAIKO_LOG_ASSERT(desc.elementSize > 0, Logger::Module::RHI, "UniformArena elementSize must be > 0");
+//     AXION_LOG_ASSERT(desc.elementSize > 0, Logger::Module::RHI, "UniformArena elementSize must be > 0");
 
 //     // align to 256 bytes for DX12 CBV
 //     _alignedElementSize = Math::AlignUp(desc.elementSize, (size_t)256);
@@ -219,9 +219,9 @@
 
 // void DX12UniformArena::update(uint32_t frameIndex, uint32_t objectIndex, const void* data, size_t size)
 // {
-//     RAIKO_LOG_ASSERT(frameIndex < _desc.framesInFlight, Logger::Module::RHI, "frameIndex out of range");
-//     RAIKO_LOG_ASSERT(objectIndex < _desc.maxObjectsPerFrame, Logger::Module::RHI, "objectIndex out of range");
-//     RAIKO_LOG_ASSERT(size <= _desc.elementSize, Logger::Module::RHI, "size > elementSize");
+//     AXION_LOG_ASSERT(frameIndex < _desc.framesInFlight, Logger::Module::RHI, "frameIndex out of range");
+//     AXION_LOG_ASSERT(objectIndex < _desc.maxObjectsPerFrame, Logger::Module::RHI, "objectIndex out of range");
+//     AXION_LOG_ASSERT(size <= _desc.elementSize, Logger::Module::RHI, "size > elementSize");
 
 //     const size_t offset = (size_t)frameIndex * _perFrameSize + (size_t)objectIndex * _alignedElementSize;
 //     uint8_t* dst = _mappedPtr + offset;
@@ -232,8 +232,8 @@
 
 // BindDescriptor DX12UniformArena::getDescriptor(uint32_t frameIndex, uint32_t objectIndex) const
 // {
-//     RAIKO_LOG_ASSERT(frameIndex < _desc.framesInFlight, Logger::Module::RHI, "frameIndex out of range");
-//     RAIKO_LOG_ASSERT(objectIndex < _desc.maxObjectsPerFrame, Logger::Module::RHI, "objectIndex out of range");
+//     AXION_LOG_ASSERT(frameIndex < _desc.framesInFlight, Logger::Module::RHI, "frameIndex out of range");
+//     AXION_LOG_ASSERT(objectIndex < _desc.maxObjectsPerFrame, Logger::Module::RHI, "objectIndex out of range");
 
 //     uint32_t idx = frameIndex * _desc.maxObjectsPerFrame + objectIndex;
 

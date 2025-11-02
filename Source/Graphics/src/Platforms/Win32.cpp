@@ -1,6 +1,6 @@
 #include "Win32.hpp"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -72,18 +72,18 @@ Win32Window::Win32Window( HINSTANCE hInstance, const Settings& settings )
 
     ::GetWindowRect( _hWnd, &_rect );
 
-    RAIKO_LOG_ASSERT( _hWnd, Logger::Module::GFX, "[FATAL] Failed to create Win32 window" );
+    AXION_LOG_ASSERT( _hWnd, Logger::Module::GFX, "[FATAL] Failed to create Win32 window" );
 
     _initialized = true;
 
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Window for Platform Win32 Created Successfully" );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Window Size: \n Width = {} \n Height = {} \n", _settings.size.width, _settings.size.height );
+    AXION_LOG_INFO( Logger::Module::GFX, "Window for Platform Win32 Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Window Size: \n Width = {} \n Height = {} \n", _settings.size.width, _settings.size.height );
 
     ShowWindow( _hWnd, SW_SHOW );
 }
 
 Win32Window::~Win32Window() {
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Destroying Platform Win32 Window" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Destroying Platform Win32 Window" );
     ::DestroyWindow( _hWnd );
 }
 bool Win32Window::processMessages() {
@@ -265,4 +265,4 @@ LRESULT Win32Window::wndProcMsg( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 } // namespace Graphics
 
 // namespace Renderer
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

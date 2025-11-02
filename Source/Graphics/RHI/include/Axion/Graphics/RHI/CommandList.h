@@ -1,9 +1,9 @@
 #pragma once
-#include "Raiko/Common/Math.h"
-#include "Raiko/Graphics/RHI/Common.h"
-#include "Raiko/Graphics/RHI/Resource.h"
+#include "Axion/Common/Math.h"
+#include "Axion/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Resource.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -38,4 +38,4 @@ typedef ICommandList::Description CommandListDesc;
 
 } // namespace RHI
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

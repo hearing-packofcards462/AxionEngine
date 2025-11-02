@@ -1,8 +1,8 @@
 #pragma once
 // Nigiri Common Module
-#include "Raiko/Common/Defines.h"
-#include "Raiko/Common/Logging.h"
-#include "Raiko/Common/Math.h"
+#include "Axion/Common/Defines.h"
+#include "Axion/Common/Logging.h"
+#include "Axion/Common/Math.h"
 
 // GLFW
 // #ifdef BUILD_GLFW
@@ -24,7 +24,7 @@ using namespace Microsoft::WRL;
 #include <dxgidebug.h>
 #pragma comment( lib, "dxguid.lib" )
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -158,7 +158,7 @@ enum TextureViewFlags : uint {
     TextureViewUnorderedAccess = 1 << 3  // UAV / VK_IMAGE_USAGE_STORAGE_BIT
 };
 
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( TextureViewFlags )
+AXION_ENUM_CLASS_FLAG_OPERATORS( TextureViewFlags )
 
 enum BufferViewFlags : uint
 {
@@ -168,7 +168,7 @@ enum BufferViewFlags : uint
     BufferViewConstantBuffer  = 1 << 2  // CBV / VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
 };
 
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( BufferViewFlags )
+AXION_ENUM_CLASS_FLAG_OPERATORS( BufferViewFlags )
 
 enum class MemoryUsage : uint
 {
@@ -177,7 +177,7 @@ enum class MemoryUsage : uint
     GPUOnly    = 1 << 1,
     Readback   = 1 << 2
 };
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( MemoryUsage )
+AXION_ENUM_CLASS_FLAG_OPERATORS( MemoryUsage )
 
 enum class BufferUsage : uint
 {
@@ -190,7 +190,7 @@ enum class BufferUsage : uint
     TransferSrc = 1 << 5,
     TransferDst = 1 << 6,
 };
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( BufferUsage )
+AXION_ENUM_CLASS_FLAG_OPERATORS( BufferUsage )
 
 struct ClearValue {
     Math::Vec4 color   = { 0.0, 0.0, 0.0, 1.0 }; // RGBA for RTV/UAV
@@ -298,7 +298,7 @@ enum class ResourceState : uint
     VideoEncodeWrite  = 1 << 25,
 };
 
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( ResourceState )
+AXION_ENUM_CLASS_FLAG_OPERATORS( ResourceState )
 
 enum class FormatSupport : uint
 {
@@ -320,7 +320,7 @@ enum class FormatSupport : uint
     ShaderAtomic   = 0x00000800,
 };
 
-RAIKO_ENUM_CLASS_FLAG_OPERATORS( FormatSupport )
+AXION_ENUM_CLASS_FLAG_OPERATORS( FormatSupport )
 
 typedef uint ObjectType;
 
@@ -412,4 +412,4 @@ public:
 };
 } // namespace RHI
 } // namespace Graphics
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

@@ -1,8 +1,8 @@
 #pragma once
-#include "Raiko/Graphics/Platforms/GLFW.h"
+#include "Axion/Graphics/Platforms/GLFW.h"
 
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -56,4 +56,4 @@ private:
 };
 
 } // namespace Graphics
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

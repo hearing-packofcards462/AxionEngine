@@ -3,15 +3,15 @@ file(GLOB APP_SOURCES
     "src/*.cpp"
 )
 
-add_executable(RaikoEditor ${APP_SOURCES})
+add_executable(AxionEditor ${APP_SOURCES})
 
-target_link_libraries(RaikoEditor
-   RaikoCommon
-   RaikoGFX
-   RaikoRHI
+target_link_libraries(AxionEditor
+   AxionCommon
+   AxionGFX
+   AxionRHI
 )
 
 
-set_target_properties(RaikoEditor PROPERTIES
+set_target_properties(AxionEditor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
 )

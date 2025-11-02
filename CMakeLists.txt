@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(RaikoEngine)
+project(AxionEngine)
 
 # Solo para MSVC, usa /std:c++20
 if (MSVC)
@@ -12,7 +12,7 @@ else()
 endif()
 
 # Doxigen for documentation
-find_package(Doxygen REQUIRED)
+find_package(Doxygen)
 
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
@@ -22,7 +22,7 @@ configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 add_custom_target(doc
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating Raikō Engine API documentation with Doxygen"
+    COMMENT "Generating Axion Engine API documentation with Doxygen"
     VERBATIM
 )
 

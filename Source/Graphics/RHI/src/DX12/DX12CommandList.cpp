@@ -3,12 +3,12 @@
 #include "DX12Resource.hpp"
 #include "DX12TranslatorUnit.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 DX12CommandList::DX12CommandList( const ComPtr<ID3D12Device2>& device, const CommandListDesc& desc )
     : _desc( desc ) {
-    RAIKO_LOG_ASSERT( desc.numFrames > 0, Logger::Module::RHI, "Invalid frame number in CreateCommandList(). Must be greater than zero" );
+    AXION_LOG_ASSERT( desc.numFrames > 0, Logger::Module::RHI, "Invalid frame number in CreateCommandList(). Must be greater than zero" );
     _cmdAllocators.resize( desc.numFrames );
 
     auto dx12type = DX12Translator::get( desc.queueType );
@@ -32,7 +32,7 @@ void DX12CommandList::end() {
 }
 
 void DX12CommandList::setCurrentFrame( uint index ) {
-    RAIKO_LOG_ASSERT( index < _cmdAllocators.size(), Logger::Module::RHI, "Invalid frame index in setCurrentFrame()" );
+    AXION_LOG_ASSERT( index < _cmdAllocators.size(), Logger::Module::RHI, "Invalid frame index in setCurrentFrame()" );
     _currentFrame = index;
 }
 
@@ -108,7 +108,7 @@ NativeObject DX12CommandList::getNativeObject( ObjectType objectType ) {
         case ObjectTypes::DX12_CommandAllocator:
             return NativeObject( objectType, _cmdAllocators[_currentFrame].Get() );
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "DX12 CommandList | Wrong Object Type" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 CommandList | Wrong Object Type" );
             return nullptr;
     }
 }
@@ -133,4 +133,4 @@ std::string RHI::DX12CommandList::toString() const {
 
 } // namespace Graphics::RHI
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

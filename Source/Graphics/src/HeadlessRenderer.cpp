@@ -1,15 +1,15 @@
 
 #include "HeadlessRenderer.hpp"
-#include "Raiko/Graphics/RHI/DX12.h"
+#include "Axion/Graphics/RHI/DX12.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
 RendererHandle Graphics::createHeadlessRenderer( const RendererSettings& settings ) {
     auto rnd = NEW_S( HeadlessRenderer )( settings );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Headless Renderer Created Succesfully" );
-    RAIKO_LOG_INFO( Logger::Module::GFX, rnd->toString() );
+    AXION_LOG_INFO( Logger::Module::GFX, "Headless Renderer Created Succesfully" );
+    AXION_LOG_INFO( Logger::Module::GFX, rnd->toString() );
     return rnd;
 }
 
@@ -67,7 +67,7 @@ void HeadlessRenderer::render( const GPUSceneView& gpuScene ) {
 
 void HeadlessRenderer::destroy() {
     _device->queueWaitIdle( RHI::QueueType::Graphics, _frameFences[_currentFrame] );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Destroying Headless Renderer" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Destroying Headless Renderer" );
 }
 bool HeadlessRenderer::isHeadless() {
     return true;

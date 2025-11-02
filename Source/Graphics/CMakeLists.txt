@@ -1,5 +1,5 @@
 # /////////////////////////////////////////////////////////////////////////////
-# Raikō Engine Graphics Upper Module
+# Axion Engine Graphics Upper Module
 # /////////////////////////////////////////////////////////////////////////////
 
 file(GLOB COMMON_SOURCES
@@ -12,15 +12,15 @@ file(GLOB COMMON_SOURCES
 # ADD SUB-MODULE FOR RHI
 add_subdirectory(RHI)
 
-add_library(RaikoGFX STATIC ${COMMON_SOURCES})
+add_library(AxionGFX STATIC ${COMMON_SOURCES})
 
 
-target_include_directories(RaikoGFX
+target_include_directories(AxionGFX
 PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/include   
 )
 
-target_link_libraries(RaikoGFX PUBLIC RaikoCommon RaikoRHI)
+target_link_libraries(AxionGFX PUBLIC AxionCommon AxionRHI)
 
 
 

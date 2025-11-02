@@ -4,9 +4,9 @@
 #include <mutex>
 #include <vector>
 
-#include "Raiko/Common/Defines.h"
+#include "Axion/Common/Defines.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Event {
 
@@ -117,4 +117,4 @@ private:
 
 } // namespace Event
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

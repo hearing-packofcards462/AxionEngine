@@ -5,13 +5,13 @@
 #include "DX12Swapchain.hpp"
 #include "DX12TranslatorUnit.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
 DX12DeviceHandle RHI::createDX12Device( const DX12DeviceDesc& desc ) {
     auto dev = NEW_S( DX12Device )( desc );
-    RAIKO_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
     return dev;
 }
 DX12Device::DX12Device( const IDX12Device::Description& desc ) {
@@ -38,11 +38,11 @@ DX12Device::DX12Device( const IDX12Device::Description& desc ) {
 
     _initialized = true;
 
-    RAIKO_LOG_INFO( Logger::Module::RHI, toString() );
+    AXION_LOG_INFO( Logger::Module::RHI, toString() );
 }
 
 DX12Device::~DX12Device() {
-    RAIKO_LOG_INFO( Logger::Module::RHI, "Destroying DirectX12 Device" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DirectX12 Device" );
 }
 
 SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const SwapchainDesc& desc ) {
@@ -58,11 +58,11 @@ SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const S
             hwnd = glfwGetWin32Window( handle );
             break;
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "Unsupported platform for swapchain" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "Unsupported platform for swapchain" );
             throw RaikoException( "" );
     }
     auto swp = NEW_S( DX12Swapchain )( hwnd, _ctx, desc );
-    RAIKO_LOG_INFO( Logger::Module::RHI, "DirectX12 Swapchain Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Swapchain Created Successfully" );
     return swp;
 }
 
@@ -358,7 +358,7 @@ std::unique_ptr<DX12Device::Queue> DX12Device::createCommandQueue( const QueueTy
         IID_PPV_ARGS( &q->fence ) ) );
 
     q->fenceEvent = ::CreateEvent( nullptr, FALSE, FALSE, nullptr );
-    RAIKO_LOG_ASSERT( q->fenceEvent, Logger::Module::RHI, "Failed to create queue fence event." );
+    AXION_LOG_ASSERT( q->fenceEvent, Logger::Module::RHI, "Failed to create queue fence event." );
 
     q->fenceValue = 0;
 
@@ -391,7 +391,7 @@ NativeObject DX12Device::getNativeObject( ObjectType objectType ) {
         // case ObjectTypes::DX12_CommandQueue:
         //     return Object( getQueue( CommandQueue::Graphics )->queue.Get() );
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "DX12 Device | Wrong Object Type" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Device | Wrong Object Type" );
             return nullptr;
     }
 }
@@ -452,4 +452,4 @@ std::string RHI::DX12Device::toString() const {
 }
 
 } // namespace Graphics::RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

@@ -1,6 +1,6 @@
-#include "Raiko/Common/Logging.h"
+#include "Axion/Common/Logging.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 // ----------------- Initialization -----------------
 void Logger::init( Level level, const std::string& file, bool truncate ) {
@@ -109,7 +109,7 @@ void Logger::log(Level level, Module module, const std::string& message)
     std::lock_guard<std::mutex> lock(instance()._mtx);
 
     std::string timestamp = getTimestamp();
-    std::string header = fmt::format("[RaikO][{}][{}][{}] ", 
+    std::string header = fmt::format("[AXION][{}][{}][{}] ", 
                                      timestamp,
                                      levelToString(level),
                                      moduleToString(module));
@@ -148,7 +148,7 @@ void Logger::log( Level level, Module module, const std::string& message, const 
 
     std::lock_guard<std::mutex> lock( instance()._mtx );
 
-    std::string output = std::format( "[RaikO][{}][{}][{}] {} ({}:{} {})",
+    std::string output = std::format( "[AXION][{}][{}][{}] {} ({}:{} {})",
                                       getTimestamp(),
                                       levelToString( level ),
                                       moduleToString( module ),
@@ -168,4 +168,4 @@ void Logger::flush() {
     if ( instance()._logFile.is_open() )
         instance()._logFile.flush();
 }
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

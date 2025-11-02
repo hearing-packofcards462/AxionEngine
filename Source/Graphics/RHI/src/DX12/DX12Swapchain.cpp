@@ -1,7 +1,7 @@
 #include "DX12Swapchain.hpp"
 #include "DX12Debug.hpp"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -12,7 +12,7 @@ DX12Swapchain::DX12Swapchain( const HWND                     hwnd,
     , _desc( desc ) {
     // DXGI Factory
     ComPtr<IDXGIFactory4> dxgiFactory4;
-#ifdef RAIKO_DEBUG
+#ifdef AXION_DEBUG
     UINT createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 #else
     UINT createFactoryFlags = 0;
@@ -96,7 +96,7 @@ void DX12Swapchain::update( const Description& newDesc ) {
     // Recreate backbuffer textures and their RTVs
     updateImages();
 
-    RAIKO_LOG_INFO( Logger::Module::RHI,
+    AXION_LOG_INFO( Logger::Module::RHI,
                     "DirectX12 Swapchain Updated: {}x{}, format {}",
                     _desc.size.width,
                     _desc.size.height,
@@ -108,7 +108,7 @@ uint32_t DX12Swapchain::acquireNextImage() {
     return _currentImage;
 }
 DX12Swapchain::~DX12Swapchain() {
-    RAIKO_LOG_INFO( Logger::Module::RHI, "Destroying Swapchain" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying Swapchain" );
 }
 void DX12Swapchain::updateImages() {
 
@@ -163,7 +163,7 @@ NativeObject DX12Swapchain::getNativeObject( ObjectType objectType ) {
         case ObjectTypes::DX12_SwapChain:
             return NativeObject( objectType, _swapchain.Get() );
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "DX12 Swapchain | Wrong Object Type" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Swapchain | Wrong Object Type" );
             return nullptr;
     }
 }
@@ -182,4 +182,4 @@ std::string RHI::DX12Swapchain::toString() const {
 }
 
 } // namespace Graphics::RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

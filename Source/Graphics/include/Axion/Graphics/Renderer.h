@@ -1,9 +1,9 @@
 #pragma once
-#include "Raiko/Graphics/GPUSceneView.h"
-#include "Raiko/Graphics/Platforms/Window.h"
-#include "Raiko/Graphics/RHI/Device.h"
+#include "Axion/Graphics/GPUSceneView.h"
+#include "Axion/Graphics/Platforms/Window.h"
+#include "Axion/Graphics/RHI/Device.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -41,4 +41,4 @@ RendererHandle createHeadlessRenderer( const RendererSettings& settings = {} );
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

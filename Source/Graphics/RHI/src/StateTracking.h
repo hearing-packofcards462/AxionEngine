@@ -1,7 +1,7 @@
 #pragma once
-#include "Raiko/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Common.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -31,4 +31,4 @@ private:
 };
 
 } // namespace RHI
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

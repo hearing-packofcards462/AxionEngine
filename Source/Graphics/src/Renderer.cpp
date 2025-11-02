@@ -1,15 +1,15 @@
 #include "Renderer.hpp"
-#include "Raiko/Graphics/Platforms/Win32.h"
-#include "Raiko/Graphics/RHI/DX12.h"
+#include "Axion/Graphics/Platforms/Win32.h"
+#include "Axion/Graphics/RHI/DX12.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
 RendererHandle Graphics::createRenderer( const WindowHandle& wnd, const RendererSettings& settings ) {
     auto rnd = NEW_S( Renderer )( wnd, settings );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Renderer Created Succesfully" );
-    RAIKO_LOG_INFO( Logger::Module::GFX, rnd->toString() );
+    AXION_LOG_INFO( Logger::Module::GFX, "Renderer Created Succesfully" );
+    AXION_LOG_INFO( Logger::Module::GFX, rnd->toString() );
     return rnd;
 }
 
@@ -35,7 +35,7 @@ Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
             //     break;
     }
 
-    RAIKO_LOG_ASSERT( _wnd, Logger::Module::GFX, "Window is NULL | Renderer needs Window. If no window needed, use Headless Renderer" );
+    AXION_LOG_ASSERT( _wnd, Logger::Module::GFX, "Window is NULL | Renderer needs Window. If no window needed, use Headless Renderer" );
     _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
 
@@ -90,7 +90,7 @@ void Renderer::render( const GPUSceneView& gpuScene ) {
 
 void Renderer::destroy() {
     _device->queueWaitIdle( RHI::QueueType::Graphics, _frameFences[_currentFrame] );
-    RAIKO_LOG_INFO( Logger::Module::GFX, "Destroying Renderer" );
+    AXION_LOG_INFO( Logger::Module::GFX, "Destroying Renderer" );
 }
 bool Renderer::isHeadless() {
     return false;

@@ -1,8 +1,8 @@
 #pragma once
-#include "Raiko/Graphics/RHI/Common.h"
-#include "Raiko/Graphics/RHI/Resource.h"
+#include "Axion/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Resource.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -86,4 +86,4 @@ typedef ISwapchain::Description SwapchainDesc;
 
 } // namespace Graphics::RHI
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

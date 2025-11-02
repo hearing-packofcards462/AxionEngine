@@ -1,9 +1,9 @@
 #pragma once
-#include "Raiko/Common/Defines.h"
+#include "Axion/Common/Defines.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Math {
 
@@ -24,4 +24,4 @@ constexpr T AlignUp( T value, T alignment ) {
 
 } // namespace Math
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

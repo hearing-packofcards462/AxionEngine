@@ -1,7 +1,7 @@
 #pragma once
-#include "Raiko/Graphics/RHI/Device.h"
+#include "Axion/Graphics/RHI/Device.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 

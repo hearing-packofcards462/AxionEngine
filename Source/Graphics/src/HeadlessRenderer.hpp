@@ -1,9 +1,9 @@
 
 #pragma once
 #include "GPUFrame.hpp"
-#include "Raiko/Graphics/Renderer.h"
+#include "Axion/Graphics/Renderer.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 

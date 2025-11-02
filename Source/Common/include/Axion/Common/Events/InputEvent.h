@@ -1,8 +1,8 @@
 #pragma once
-#include "Raiko/Common/Defines.h"
-#include "Raiko/Common/Events/Event.h"
+#include "Axion/Common/Defines.h"
+#include "Axion/Common/Events/Event.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Event {
 
@@ -63,4 +63,4 @@ struct MouseScrollEvent : public InputEvent {
 
 } // namespace Event
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

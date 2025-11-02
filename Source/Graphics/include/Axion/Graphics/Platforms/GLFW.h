@@ -1,7 +1,7 @@
 #pragma once
-#include "Raiko/Graphics/Platforms/Window.h"
+#include "Axion/Graphics/Platforms/Window.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics {
 
@@ -46,4 +46,4 @@ WindowHandle createWindowForGLFW( const WindowSettings& settings = {} );
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

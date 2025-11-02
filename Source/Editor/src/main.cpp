@@ -1,22 +1,22 @@
 #pragma once
-#include "Raiko/Common/Defines.h"
-#include "Raiko/Graphics/Platforms/Win32.h"
-#include "Raiko/Graphics/Platforms/GLFW.h"
-#include "Raiko/Graphics/Renderer.h"
+#include "Axion/Common/Defines.h"
+#include "Axion/Graphics/Platforms/Win32.h"
+#include "Axion/Graphics/Platforms/GLFW.h"
+#include "Axion/Graphics/Renderer.h"
 
-USING_RAIKO_NAMESPACE
+USING_AXION_NAMESPACE
 
 int main( /*int argc, char* argv[]*/ ) {
 
     try
     {
-#ifdef RAIKO_DEBUG
-        Raiko::Logger::init( Logger::Level::Info, "Engine.log" );
+#ifdef AXION_DEBUG
+        Axion::Logger::init( Logger::Level::Info, "Engine.log" );
 #endif
 
-        auto wnd = Raiko::Graphics::createWindowForWin32( GetModuleHandle( nullptr ), { .name = "Test Window" } );
-        // auto wnd = Raiko::Graphics::createWindowForGLFW(  { .name = "Test Window" } );
-        auto rnd = Raiko::Graphics::createRenderer( wnd,
+        auto wnd = Axion::Graphics::createWindowForWin32( GetModuleHandle( nullptr ), { .name = "Test Window" } );
+        // auto wnd = Axion::Graphics::createWindowForGLFW(  { .name = "Test Window" } );
+        auto rnd = Axion::Graphics::createRenderer( wnd,
                                                     { .gfxApi        = Graphics::API::DirectX12,
                                                       .bufferingType = Graphics::BufferingType::Double,
                                                       .presentMode   = Graphics::PresentMode::Vsync } );
@@ -49,8 +49,8 @@ int main( /*int argc, char* argv[]*/ ) {
             rnd->render();
         };
 
-#ifdef RAIKO_DEBUG
-        Raiko::Logger::shutdown();
+#ifdef AXION_DEBUG
+        Axion::Logger::shutdown();
 #endif
 
     } catch ( const std::exception& e )

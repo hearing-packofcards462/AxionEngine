@@ -1,5 +1,5 @@
 # /////////////////////////////////////////////////////////////////////////////
-# Raikō Engine Common module
+# Axion Engine Common module
 # /////////////////////////////////////////////////////////////////////////////
 
 file(GLOB COMMON_SOURCES
@@ -7,14 +7,14 @@ file(GLOB COMMON_SOURCES
 )
 
 
-add_library(RaikoCommon STATIC ${COMMON_SOURCES})
+add_library(AxionCommon STATIC ${COMMON_SOURCES})
 
 
-target_include_directories(RaikoCommon
+target_include_directories(AxionCommon
 PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/include   
 )
 
-target_link_libraries(RaikoCommon PUBLIC glm fmt::fmt)
+target_link_libraries(AxionCommon PUBLIC glm fmt::fmt)
 
 

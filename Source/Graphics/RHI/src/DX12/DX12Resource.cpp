@@ -3,7 +3,7 @@
 #include "DX12Debug.hpp"
 #include "DX12TranslatorUnit.h"
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -141,7 +141,7 @@ NativeObject DX12Texture::getNativeObject( ObjectType objectType ) {
         case ObjectTypes::DX12_Resource:
             return NativeObject( objectType, _resource.Get() );
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "DX12 Texture | Wrong Object Type" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Texture | Wrong Object Type" );
             return nullptr;
     }
 }
@@ -214,7 +214,7 @@ DX12Buffer::DX12Buffer( const BufferDesc&    desc,
 }
 
 void* DX12Buffer::map() {
-    RAIKO_LOG_ASSERT(
+    AXION_LOG_ASSERT(
         _desc.memory == MemoryUsage::CPUVisible || _desc.memory == MemoryUsage::Readback,
         Logger::Module::RHI,
         "Map called on non-CPU buffer" );
@@ -240,7 +240,7 @@ NativeObject DX12Buffer::getNativeObject( ObjectType objectType ) {
         case ObjectTypes::DX12_Resource:
             return NativeObject( objectType, _resource.Get() );
         default:
-            RAIKO_LOG_ERROR( Logger::Module::RHI, "DX12 Buffer | Wrong Object Type" );
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Buffer | Wrong Object Type" );
             return nullptr;
     }
 }
@@ -389,4 +389,4 @@ DX12Buffer::~DX12Buffer() {
 
 } // namespace Graphics::RHI
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END

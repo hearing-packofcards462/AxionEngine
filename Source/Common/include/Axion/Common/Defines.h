@@ -28,9 +28,9 @@
 // Handle MACRO Definitions
 // ---------------------------------------------------------------------------
 
-#define RAIKO_NAMESPCE_BEGIN namespace Raiko {
-#define RAIKO_NAMESPCE_END }
-#define USING_RAIKO_NAMESPACE using namespace Raiko;
+#define AXION_NAMESPCE_BEGIN namespace Axion {
+#define AXION_NAMESPCE_END }
+#define USING_AXION_NAMESPACE using namespace Axion;
 
 #define DEFINE_HANDLE_FOR_TYPE( type, clean ) \
     class type;                               \
@@ -43,10 +43,10 @@
     std::make_unique<type>
 
 #if defined( _DEBUG ) || !defined( NDEBUG )
-#define RAIKO_DEBUG
+#define AXION_DEBUG
 #endif
 
-#define RAIKO_ENUM_CLASS_FLAG_OPERATORS( T )                                                                                  \
+#define AXION_ENUM_CLASS_FLAG_OPERATORS( T )                                                                                  \
     inline T    operator|( T a, T b ) { return T( uint32_t( a ) | uint32_t( b ) ); }                                          \
     inline T    operator&( T a, T b ) { return T( uint32_t( a ) & uint32_t( b ) ); } /* NOLINT(bugprone-macro-parentheses) */ \
     inline T    operator~( T a ) { return T( ~uint32_t( a ) ); }                     /* NOLINT(bugprone-macro-parentheses) */ \
@@ -63,14 +63,14 @@ typedef unsigned int       uint;
 typedef unsigned short     ushort;
 typedef unsigned char      uchar;
 
-RAIKO_NAMESPCE_BEGIN
+AXION_NAMESPCE_BEGIN
 
 /// Simple exception class, which stores a human-readable error description
-class RaikoException : public std::runtime_error
+class AxionException : public std::runtime_error
 {
 public:
     template <typename... Args>
-    RaikoException( const char* fmt, const Args&... args )
+    AxionException( const char* fmt, const Args&... args )
         : std::runtime_error( fmt ) {
     }
 };
@@ -110,4 +110,4 @@ struct Extent3D {
     }
 };
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPCE_END
