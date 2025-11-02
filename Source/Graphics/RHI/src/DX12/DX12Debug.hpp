@@ -1,0 +1,48 @@
+#pragma once
+#include "Raiko/Graphics/RHI/Common.h"
+
+RAIKO_NAMESPCE_BEGIN
+
+namespace Graphics::RHI::Debug {
+
+inline std::string getLastDXGIMessage() {
+    ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
+    if ( FAILED( DXGIGetDebugInterface1( 0, IID_PPV_ARGS( &dxgiInfoQueue ) ) ) )
+        return {};
+
+    std::stringstream ss;
+    for ( UINT64 i = 0; i < dxgiInfoQueue->GetNumStoredMessages( DXGI_DEBUG_ALL ); ++i )
+    {
+        SIZE_T messageLength = 0;
+        dxgiInfoQueue->GetMessage( DXGI_DEBUG_ALL, i, nullptr, &messageLength );
+
+        std::vector<char> messageData( messageLength );
+        auto*             message = reinterpret_cast<DXGI_INFO_QUEUE_MESSAGE*>( messageData.data() );
+
+        if ( SUCCEEDED( dxgiInfoQueue->GetMessage( DXGI_DEBUG_ALL, i, message, &messageLength ) ) )
+            ss << message->pDescription << "\n";
+    }
+
+    dxgiInfoQueue->ClearStoredMessages( DXGI_DEBUG_ALL );
+    return ss.str();
+}
+
+} // namespace Graphics::RHI::Debug
+
+RAIKO_NAMESPCE_END
+
+#define DX_CHECK( x )                                                      \
+    do                                                                     \
+    {                                                                      \
+        HRESULT hr__ = ( x );                                              \
+        if ( FAILED( hr__ ) )                                              \
+        {                                                                  \
+            std::string dxgiMsg = Raiko::Graphics::RHI::Debug::getLastDXGIMessage(); \
+            RAIKO_LOG_ERROR( Raiko::Logger::Module::RHI,                   \
+                             "DirectX12 error: 0x{:X} DXGI Layer: {}",     \
+                             hr__,                                         \
+                             dxgiMsg );                                    \
+            Raiko::Logger::flush();                                        \
+            abort();                                                       \
+        }                                                                  \
+    } while ( 0 )

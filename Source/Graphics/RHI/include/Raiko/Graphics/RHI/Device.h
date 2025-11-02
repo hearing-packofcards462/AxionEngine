@@ -1,0 +1,42 @@
+#pragma once
+#include "Raiko/Graphics/RHI/CommandList.h"
+#include "Raiko/Graphics/RHI/Common.h"
+#include "Raiko/Graphics/RHI/Resource.h"
+#include "Raiko/Graphics/RHI/Swapchain.h"
+
+RAIKO_NAMESPCE_BEGIN
+
+namespace Graphics::RHI {
+
+DEFINE_HANDLE_FOR_TYPE( IDevice, Device )
+
+struct Fence {
+    ulong value = 0;
+};
+
+class IDevice : public IResource
+{
+public:
+    virtual ~IDevice()                                                                                      = default;
+    virtual SwapchainHandle   createSwapchain( const NativeObject& handle, const SwapchainDesc& desc = {} ) = 0;
+    virtual CommandListHandle createCommandList( const CommandListDesc& desc )                              = 0;
+    virtual TextureHandle     createTexture( const TextureDesc& desc, const void* initialData = nullptr )   = 0;
+    virtual BufferHandle      createBuffer( const BufferDesc& desc, const void* initialData = nullptr )     = 0;
+
+    virtual void executeCommandLists( const std::vector<CommandListHandle>& lists, QueueType workingQueue, Fence& frameFence ) = 0;
+    virtual void waitForFrame( const Fence& frameFence, QueueType workingQueue )                                               = 0;
+    virtual void waitForQueue( QueueType workingQueue, QueueType dstQueue )                                                    = 0;
+    virtual void queueWaitIdle( QueueType workingQueue, Fence& frameFence )                                                    = 0;
+    virtual bool waitIdle()                                                                                                    = 0;
+
+    virtual bool          queryFeatureSupport( Feature feature, void* pInfo = nullptr, size_t infoSize = 0 ) const = 0;
+    virtual FormatSupport queryFormatSupport( Format format ) const                                                = 0;
+    virtual API           getGraphicsAPI()                                                                         = 0;
+
+protected:
+    virtual void checkExtensions() = 0;
+};
+
+} // namespace Graphics::RHI
+
+RAIKO_NAMESPCE_END

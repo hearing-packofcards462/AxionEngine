@@ -1,0 +1,98 @@
+#pragma once
+#include "DX12Device.hpp"
+#include "Raiko/Common/Math.h"
+#include "Raiko/Graphics/RHI/Resource.h"
+#include "StateTracking.h"
+
+RAIKO_NAMESPCE_BEGIN
+
+namespace Graphics::RHI {
+
+DEFINE_HANDLE_FOR_TYPE( DX12Texture, DX12Texture )
+
+class DX12Texture : public ITexture
+{
+public:
+    ~DX12Texture() override;
+    DX12Texture( const TextureDesc&   desc,
+                 DX12Device::Context& ctx,
+                 const void*          initialData = nullptr );
+    DX12Texture( const ComPtr<ID3D12Device2>&  device,
+                 const ComPtr<ID3D12Resource>& resource,
+                 const TextureDesc&            desc,
+                 bool                          useDecriptionParams,
+                 DX12Device::Resources&        resources );
+
+    const TextureDesc&    getDescription() const override;
+    void                  setDebugName( const std::string& name ) override;
+    const std::string&    getDebugName() const override;
+    NativeObject          getNativeObject( ObjectType objectType ) override;
+    ResourceStateTracker& stateTracker();
+    std::string           toString() const override;
+
+    D3D12_CPU_DESCRIPTOR_HANDLE getSRV() const { return _srvHandle; }
+    D3D12_CPU_DESCRIPTOR_HANDLE getRTV() const { return _rtvHandle; }
+    D3D12_CPU_DESCRIPTOR_HANDLE getDSV() const { return _dsvHandle; }
+
+private:
+    void createViews( const ComPtr<ID3D12Device2>& device, DX12Device::Resources& resources, bool useDescriptionParams );
+    void uploadInitialData( DX12Device::Context& ctx, const void* initialData );
+
+    TextureDesc          _desc;
+    ResourceStateTracker _stateTracker;
+
+    ComPtr<ID3D12Resource> _resource;
+
+    // CPU handles for views
+    D3D12_CPU_DESCRIPTOR_HANDLE _srvHandle    = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE _srvGPUHandle = {};
+
+    D3D12_CPU_DESCRIPTOR_HANDLE _rtvHandle = {};
+    D3D12_CPU_DESCRIPTOR_HANDLE _dsvHandle = {};
+};
+
+DEFINE_HANDLE_FOR_TYPE( DX12Buffer, DX12Buffer )
+
+class DX12Buffer : public IBuffer
+{
+public:
+    ~DX12Buffer() override;
+    DX12Buffer(
+        const BufferDesc&    desc,
+        DX12Device::Context& ctx,
+        const void*          initialData = nullptr );
+
+    const BufferDesc&     getDescription() const override { return _desc; }
+    void*                 map() override;
+    void                  unmap() override;
+    void                  setDebugName( const std::string& name ) override;
+    const std::string&    getDebugName() const override { return _desc.debugName; }
+    NativeObject          getNativeObject( ObjectType objectType ) override;
+    std::string           toString() const override;
+    ResourceStateTracker& stateTracker() { return _stateTracker; };
+
+    D3D12_CPU_DESCRIPTOR_HANDLE getSRV() const { return _srvHandle; }
+    D3D12_CPU_DESCRIPTOR_HANDLE getCBV() const { return _cbvHandle; }
+    D3D12_CPU_DESCRIPTOR_HANDLE getUAV() const { return _uavHandle; }
+
+private:
+    void createViews( DX12Device::Context& ctx );
+    void uploadInitialData( DX12Device::Context& ctx, const void* initialData );
+
+private:
+    BufferDesc           _desc {};
+    ResourceStateTracker _stateTracker;
+
+    ComPtr<ID3D12Resource> _resource;
+
+    // CPU descriptor handles
+    D3D12_CPU_DESCRIPTOR_HANDLE _srvHandle    = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE _srvGPUHandle = {};
+
+    D3D12_CPU_DESCRIPTOR_HANDLE _cbvHandle = {};
+    D3D12_CPU_DESCRIPTOR_HANDLE _uavHandle = {};
+};
+
+} // namespace Graphics::RHI
+
+RAIKO_NAMESPCE_END

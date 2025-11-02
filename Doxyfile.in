@@ -1,0 +1,76 @@
+# =============================
+# Doxyfile.in — Nigiri Engine
+# =============================
+
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_BRIEF          = "Nigiri Engine — Modular Rendering and Editor Framework"
+OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@/docs"
+
+# -------------------------------------------------------
+# INPUT — all major engine modules under /Source
+# -------------------------------------------------------
+INPUT = \
+  "@PROJECT_SOURCE_DIR@/Source/EngineCore/include/Nigiri/EngineCore" \
+  "@PROJECT_SOURCE_DIR@/Source/EngineCore/src" \
+  "@PROJECT_SOURCE_DIR@/Source/Renderer/include/Nigiri/Renderer" \
+  "@PROJECT_SOURCE_DIR@/Source/Renderer/src" \
+  "@PROJECT_SOURCE_DIR@/Source/RHI/include/Nigiri/RHI" \
+  "@PROJECT_SOURCE_DIR@/Source/RHI/src" \
+  "@PROJECT_SOURCE_DIR@/Source/Editor/include/Nigiri/Editor" \
+  "@PROJECT_SOURCE_DIR@/Source/Editor/src"
+
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_ANON_NSPACES   = NO
+
+# -------------------------------------------------------
+# Source browsing and filtering
+# -------------------------------------------------------
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_FROM_PATH        = "@PROJECT_SOURCE_DIR@/Source"
+FILE_PATTERNS          = *.h *.hpp *.cpp *.inl
+
+# -------------------------------------------------------
+# Output
+# -------------------------------------------------------
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+QUIET                  = YES
+
+# -------------------------------------------------------
+# Graphs & Diagrams
+# -------------------------------------------------------
+HAVE_DOT               = NO
+DOT_IMAGE_FORMAT       = svg
+CLASS_DIAGRAMS         = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_GRAPH_MAX_NODES    = 80
+MAX_DOT_GRAPH_DEPTH    = 2
+DIRECTORY_GRAPH        = YES
+
+# -------------------------------------------------------
+# Namespace & C++ Support
+# -------------------------------------------------------
+EXTENSION_MAPPING      = h=Cpp hpp=Cpp cpp=Cpp
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+PREDEFINED             = \
+  NIGIRI_NAMESPCE_BEGIN="namespace Nigiri {" \
+  NIGIRI_NAMESPCE_END="}" \
+  DEFINE_HANDLE_FOR_TYPE(a,b)=
+
+# -------------------------------------------------------
+# Sorting and Formatting
+# -------------------------------------------------------
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES
+SORT_GROUP_NAMES       = YES
+SHOW_NAMESPACES        = YES
+SHOW_FILES             = YES
+SHOW_DIRECTORIES       = YES
