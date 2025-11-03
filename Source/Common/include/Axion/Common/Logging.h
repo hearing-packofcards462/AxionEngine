@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_map>
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 /**
  * @brief Lightweight thread-safe logger for Raiko engine.
@@ -124,7 +124,7 @@ private:
     std::mutex    _mtx;
 };
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END
 
 // -------------------------------------------------
 // Macros for convenience

@@ -1,14 +1,12 @@
 #pragma once
 #include "Axion/Graphics/RHI/Device.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-class GPUSceneView
-{
-};
+class GPUSceneView { };
 
-} // namespace Renderer
+} // namespace Graphics
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

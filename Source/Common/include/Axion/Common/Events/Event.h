@@ -6,7 +6,7 @@
 
 #include "Axion/Common/Defines.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Event {
 
@@ -117,4 +117,4 @@ private:
 
 } // namespace Event
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

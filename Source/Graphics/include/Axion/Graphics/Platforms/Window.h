@@ -4,7 +4,7 @@
 #include "Axion/Common/Events/WindowEvent.h"
 #include "Axion/Graphics/RHI/Device.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -113,4 +113,4 @@ typedef IWindow::Settings WindowSettings;
 
 } // namespace Graphics
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

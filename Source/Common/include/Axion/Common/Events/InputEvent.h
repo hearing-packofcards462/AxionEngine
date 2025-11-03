@@ -2,7 +2,7 @@
 #include "Axion/Common/Defines.h"
 #include "Axion/Common/Events/Event.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Event {
 
@@ -63,4 +63,4 @@ struct MouseScrollEvent : public InputEvent {
 
 } // namespace Event
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

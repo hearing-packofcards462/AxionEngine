@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Math {
 
@@ -24,4 +24,4 @@ constexpr T AlignUp( T value, T alignment ) {
 
 } // namespace Math
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

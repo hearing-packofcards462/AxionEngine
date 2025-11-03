@@ -2,7 +2,7 @@
 #include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/RHI/DX12.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -142,4 +142,4 @@ void Renderer::windowCallback( const Extent2D& newSize ) {
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPACE_END

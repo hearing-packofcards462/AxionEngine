@@ -2,7 +2,7 @@
 #include "Axion/Graphics/Platforms/Window.h"
 #include <assert.h>
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -38,4 +38,4 @@ WindowHandle createWindowForWin32( HINSTANCE hInstance, const WindowSettings& se
 
 } // namespace Renderer
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

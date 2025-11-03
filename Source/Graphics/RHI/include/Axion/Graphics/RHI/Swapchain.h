@@ -2,7 +2,7 @@
 #include "Axion/Graphics/RHI/Common.h"
 #include "Axion/Graphics/RHI/Resource.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -86,4 +86,4 @@ typedef ISwapchain::Description SwapchainDesc;
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

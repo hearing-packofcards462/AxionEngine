@@ -24,7 +24,7 @@ using namespace Microsoft::WRL;
 #include <dxgidebug.h>
 #pragma comment( lib, "dxguid.lib" )
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -412,4 +412,4 @@ public:
 };
 } // namespace RHI
 } // namespace Graphics
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

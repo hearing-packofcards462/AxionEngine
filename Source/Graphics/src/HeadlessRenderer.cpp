@@ -2,7 +2,7 @@
 #include "HeadlessRenderer.hpp"
 #include "Axion/Graphics/RHI/DX12.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -99,4 +99,4 @@ const RendererSettings& HeadlessRenderer::getSettings() const {
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPACE_END

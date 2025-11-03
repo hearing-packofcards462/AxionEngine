@@ -2,7 +2,7 @@
 
 #include "Axion/Graphics/RHI/CommandList.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -40,4 +40,4 @@ private:
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

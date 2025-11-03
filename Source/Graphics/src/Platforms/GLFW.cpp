@@ -1,6 +1,6 @@
 #include "GLFW.hpp"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -170,4 +170,4 @@ void GLFWWindow::setCallbacksFunctions() {
 
 } // namespace Graphics
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

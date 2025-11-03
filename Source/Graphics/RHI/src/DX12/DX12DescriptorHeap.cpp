@@ -2,7 +2,7 @@
 #include "DX12Debug.hpp"
 #include "DX12DescriptorHeap.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace  Graphics::RHI {
 void DX12DescriptorHeap::init( const ComPtr<ID3D12Device>& device, Type type, uint numDescriptors ) {
@@ -60,4 +60,4 @@ D3D12_GPU_DESCRIPTOR_HANDLE DX12DescriptorHeap::getGPU( D3D12_CPU_DESCRIPTOR_HAN
 
 } // namespace RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

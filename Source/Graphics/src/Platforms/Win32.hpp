@@ -1,7 +1,7 @@
 #pragma once
 #include "Axion/Graphics/Platforms/Win32.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -58,4 +58,4 @@ private:
 };
 
 } // namespace Graphics
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

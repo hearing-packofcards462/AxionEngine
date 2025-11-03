@@ -1,8 +1,8 @@
 #pragma once
-#include "GPUFrame.hpp"
 #include "Axion/Graphics/Renderer.h"
+#include "GPUFrame.hpp"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -35,10 +35,10 @@ private:
     std::vector<RHI::Fence> _frameFences;
 
     // Window Related
-    WindowHandle                                                                                  _wnd            = nullptr;
-    std::unique_ptr<Raiko::Event::EventDispatcher<Raiko::Event::WindowResizeEvent>::Subscription> _resizeCbHandle = nullptr;
-    bool                                                                                          _pendingResize  = false;
-    RHI::SwapchainHandle                                                                          _swapchain      = nullptr;
+    WindowHandle                                                                    _wnd            = nullptr;
+    std::unique_ptr<Event::EventDispatcher<Event::WindowResizeEvent>::Subscription> _resizeCbHandle = nullptr;
+    bool                                                                            _pendingResize  = false;
+    RHI::SwapchainHandle                                                            _swapchain      = nullptr;
 
     std::vector<GPUFrame> _frames;
     uint                  _currentFrame = 0;
@@ -47,4 +47,4 @@ private:
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPACE_END

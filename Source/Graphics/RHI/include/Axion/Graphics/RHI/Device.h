@@ -4,7 +4,7 @@
 #include "Axion/Graphics/RHI/Resource.h"
 #include "Axion/Graphics/RHI/Swapchain.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -39,4 +39,4 @@ protected:
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

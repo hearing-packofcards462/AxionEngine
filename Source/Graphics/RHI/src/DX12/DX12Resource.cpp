@@ -3,7 +3,7 @@
 #include "DX12Debug.hpp"
 #include "DX12TranslatorUnit.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -389,4 +389,4 @@ DX12Buffer::~DX12Buffer() {
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

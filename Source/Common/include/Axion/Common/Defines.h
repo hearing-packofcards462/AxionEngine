@@ -28,8 +28,8 @@
 // Handle MACRO Definitions
 // ---------------------------------------------------------------------------
 
-#define AXION_NAMESPCE_BEGIN namespace Axion {
-#define AXION_NAMESPCE_END }
+#define AXION_NAMESPACE_BEGIN namespace Axion {
+#define AXION_NAMESPACE_END }
 #define USING_AXION_NAMESPACE using namespace Axion;
 
 #define DEFINE_HANDLE_FOR_TYPE( type, clean ) \
@@ -63,7 +63,7 @@ typedef unsigned int       uint;
 typedef unsigned short     ushort;
 typedef unsigned char      uchar;
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 /// Simple exception class, which stores a human-readable error description
 class AxionException : public std::runtime_error
@@ -110,4 +110,4 @@ struct Extent3D {
     }
 };
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

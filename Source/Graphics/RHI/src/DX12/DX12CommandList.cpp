@@ -3,7 +3,7 @@
 #include "DX12Resource.hpp"
 #include "DX12TranslatorUnit.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 DX12CommandList::DX12CommandList( const ComPtr<ID3D12Device2>& device, const CommandListDesc& desc )
@@ -133,4 +133,4 @@ std::string RHI::DX12CommandList::toString() const {
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

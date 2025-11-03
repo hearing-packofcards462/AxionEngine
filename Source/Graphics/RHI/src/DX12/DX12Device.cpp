@@ -5,7 +5,7 @@
 #include "DX12Swapchain.hpp"
 #include "DX12TranslatorUnit.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -59,7 +59,7 @@ SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const S
             break;
         default:
             AXION_LOG_ERROR( Logger::Module::RHI, "Unsupported platform for swapchain" );
-            throw RaikoException( "" );
+            throw AxionException( "Unsupported platform for swapchain" );
     }
     auto swp = NEW_S( DX12Swapchain )( hwnd, _ctx, desc );
     AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Swapchain Created Successfully" );
@@ -452,4 +452,4 @@ std::string RHI::DX12Device::toString() const {
 }
 
 } // namespace Graphics::RHI
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

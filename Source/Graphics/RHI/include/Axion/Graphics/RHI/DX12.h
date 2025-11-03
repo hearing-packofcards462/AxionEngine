@@ -1,7 +1,7 @@
 #pragma once
 #include "Axion/Graphics/RHI/Device.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -52,4 +52,4 @@ DX12DeviceHandle                  createDX12Device( const DX12DeviceDesc& desc )
 
 } // namespace Graphics::RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

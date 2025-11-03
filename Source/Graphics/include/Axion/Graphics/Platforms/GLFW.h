@@ -1,7 +1,7 @@
 #pragma once
 #include "Axion/Graphics/Platforms/Window.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -46,4 +46,4 @@ WindowHandle createWindowForGLFW( const WindowSettings& settings = {} );
 
 } // namespace Graphics
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

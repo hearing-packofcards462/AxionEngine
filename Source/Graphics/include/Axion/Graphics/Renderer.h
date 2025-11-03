@@ -3,7 +3,7 @@
 #include "Axion/Graphics/Platforms/Window.h"
 #include "Axion/Graphics/RHI/Device.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -41,4 +41,4 @@ RendererHandle createHeadlessRenderer( const RendererSettings& settings = {} );
 
 } // namespace Graphics
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

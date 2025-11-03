@@ -2,7 +2,7 @@
 #include "Axion/Graphics/RHI/Common.h"
 #include <array>
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 namespace Graphics::RHI {
 // Translates engine flags to DirectX12 types
 namespace DX12Translator {
@@ -347,4 +347,4 @@ constexpr D3D12_RESOURCE_STATES get( ResourceState s ) {
 
 } // namespace DX12Translator
 } // namespace Graphics::RHI
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

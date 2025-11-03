@@ -3,7 +3,7 @@
 #include "GPUFrame.hpp"
 #include "Axion/Graphics/Renderer.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -40,4 +40,4 @@ private:
 
 } // namespace Graphics
 
-RAIKO_NAMESPCE_END
+AXION_NAMESPACE_END

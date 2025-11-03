@@ -2,7 +2,7 @@
 #include "DX12DescriptorHeap.h"
 #include "Axion/Graphics/RHI/DX12.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -124,4 +124,4 @@ private:
 };
 
 } // namespace Graphics::RHI
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

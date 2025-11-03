@@ -1,6 +1,6 @@
 #include "Axion/Common/Logging.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 // ----------------- Initialization -----------------
 void Logger::init( Level level, const std::string& file, bool truncate ) {
@@ -168,4 +168,4 @@ void Logger::flush() {
     if ( instance()._logFile.is_open() )
         instance()._logFile.flush();
 }
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

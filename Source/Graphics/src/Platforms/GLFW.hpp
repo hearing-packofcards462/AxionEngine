@@ -2,7 +2,7 @@
 #include "Axion/Graphics/Platforms/GLFW.h"
 
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -56,4 +56,4 @@ private:
 };
 
 } // namespace Graphics
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

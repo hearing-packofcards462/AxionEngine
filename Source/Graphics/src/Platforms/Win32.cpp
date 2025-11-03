@@ -1,6 +1,6 @@
 #include "Win32.hpp"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
@@ -265,4 +265,4 @@ LRESULT Win32Window::wndProcMsg( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 } // namespace Graphics
 
 // namespace Renderer
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

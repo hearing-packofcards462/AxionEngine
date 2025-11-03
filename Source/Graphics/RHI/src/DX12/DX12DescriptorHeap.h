@@ -1,7 +1,7 @@
 #pragma once
 #include "Axion/Graphics/RHI/Common.h"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace  Graphics::RHI {
 
@@ -35,4 +35,4 @@ private:
 };
 } // namespace RHI
 
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END

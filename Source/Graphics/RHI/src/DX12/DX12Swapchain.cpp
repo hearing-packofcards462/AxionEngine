@@ -1,7 +1,7 @@
 #include "DX12Swapchain.hpp"
 #include "DX12Debug.hpp"
 
-AXION_NAMESPCE_BEGIN
+AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
@@ -182,4 +182,4 @@ std::string RHI::DX12Swapchain::toString() const {
 }
 
 } // namespace Graphics::RHI
-AXION_NAMESPCE_END
+AXION_NAMESPACE_END
