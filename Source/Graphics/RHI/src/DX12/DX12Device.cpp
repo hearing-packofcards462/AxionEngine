@@ -14,6 +14,7 @@ DX12DeviceHandle RHI::createDX12Device( const DX12DeviceDesc& desc ) {
     AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
     return dev;
 }
+
 DX12Device::DX12Device( const IDX12Device::Description& desc ) {
 
     _desc = desc;
@@ -22,19 +23,37 @@ DX12Device::DX12Device( const IDX12Device::Description& desc ) {
         enableDebugLayer();
 
     // Initializing Context
-    _ctx.adapter = getGPUAdapter();
-    _ctx.device  = createDevice( _ctx.adapter );
-    checkExtensions();
+    {
 
-    _ctx.primaryQueue = createCommandQueue( QueueType::Graphics, "Graphics Queue" );
-    _ctx.computeQueue = createCommandQueue( QueueType::Compute, "Compute Queue" );
-    _ctx.copyQueue    = createCommandQueue( QueueType::Transfer, "Copy Queue" );
+        _ctx.adapter = getGPUAdapter();
 
-    _ctx.resources.heapSRV.init( _ctx.device, DX12DescriptorHeap::Type::CBV_SRV_UAV, desc.shaderResourceViewHeapSize );
-    _ctx.resources.heapRTV.init( _ctx.device, DX12DescriptorHeap::Type::RTV, desc.renderTargetViewHeapSize );
-    _ctx.resources.heapDSV.init( _ctx.device, DX12DescriptorHeap::Type::DSV, desc.depthStencilViewHeapSize );
+        _ctx.device = createDevice( _ctx.adapter );
+        _ctx.device->SetName( std::wstring( desc.debugName.begin(), desc.debugName.end() ).c_str() );
+        checkExtensions();
 
-    _ctx.device->SetName( std::wstring( desc.debugName.begin(), desc.debugName.end() ).c_str() );
+        _ctx.primaryQueue = createCommandQueue( QueueType::Graphics, "Graphics Queue" );
+        _ctx.computeQueue = createCommandQueue( QueueType::Compute, "Compute Queue" );
+        _ctx.copyQueue    = createCommandQueue( QueueType::Transfer, "Copy Queue" );
+
+        _ctx.resources.heapSRV.init( _ctx.device, DX12DescriptorHeap::Type::CBV_SRV_UAV, desc.shaderResourceViewHeapSize );
+        _ctx.resources.heapRTV.init( _ctx.device, DX12DescriptorHeap::Type::RTV, desc.renderTargetViewHeapSize );
+        _ctx.resources.heapDSV.init( _ctx.device, DX12DescriptorHeap::Type::DSV, desc.depthStencilViewHeapSize );
+
+        // struct UploadContext {
+        // CommandListHandle   commandList = nullptr;
+        // ComPtr<ID3D12Fence> fence;
+        // HANDLE              fenceEvent = nullptr;
+        // ulong               fenceValue = 0;
+
+        // _ctx.uploadContext.commandList = createCommandList( { .queueType = QueueType::Graphics, .numFrames = 1 } );
+        // DX_CHECK( _ctx.device->CreateFence(
+        //     0,
+        //     D3D12_FENCE_FLAG_NONE,
+        //     IID_PPV_ARGS( &_ctx.uploadContext.fence ) ) );
+
+        // _ctx.uploadContext.fe = ::CreateEvent( nullptr, FALSE, FALSE, nullptr );
+        // AXION_LOG_ASSERT( q->fenceEvent, Logger::Module::RHI, "Failed to create queue fence event." );
+    }
 
     _initialized = true;
 
@@ -449,6 +468,43 @@ std::string RHI::DX12Device::toString() const {
     ss << fmt::format( "    Coop Vec Training: {}\n", _ext.coopVecTrainingSupported );
 
     return fmt::format( "{}\n\n{}", deviceInfo, ss.str() );
+}
+
+void DX12Device::UploadContext::init( const ComPtr<ID3D12Device2>& device ) {
+
+    CommandListDesc cmdDesc = { .queueType = QueueType::Graphics, .numFrames = 1 };
+    _commandList            = NEW_S( DX12CommandList )( device, cmdDesc );
+
+    // Create fence
+    DX_CHECK( device->CreateFence(
+        0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &_fence ) ) );
+    _fenceValue = 1;
+
+    // Create OS event for GPU sync
+    _fenceEvent = ::CreateEvent( nullptr, FALSE, FALSE, nullptr );
+}
+
+void DX12Device::UploadContext::oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( CommandListHandle& )>& commands ) {
+
+    _commandList->begin(); // Reset & begin recording
+    commands( _commandList );
+    _commandList->end();
+
+    // Submit to queue
+    ID3D12CommandList* lists[]    = { _commandList->getNativeObject( ObjectTypes::DX12_CommandList ) };
+    uploadQueue->queue->ExecuteCommandLists( 1, lists );
+
+    // Fence
+    DX_CHECK( uploadQueue->queue->Signal( _fence.Get(), _fenceValue ) );
+
+    if ( _fence->GetCompletedValue() < _fenceValue )
+    {
+        DX_CHECK( _fence->SetEventOnCompletion( _fenceValue, _fenceEvent ) );
+        WaitForSingleObject( _fenceEvent, INFINITE );
+    }
+
+    _fenceValue++;
+
 }
 
 } // namespace Graphics::RHI

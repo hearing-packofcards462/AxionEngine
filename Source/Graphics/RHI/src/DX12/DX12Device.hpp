@@ -1,6 +1,7 @@
 #pragma once
-#include "DX12DescriptorHeap.h"
 #include "Axion/Graphics/RHI/DX12.h"
+#include "DX12DescriptorHeap.h"
+#include <functional>
 
 AXION_NAMESPACE_BEGIN
 
@@ -41,11 +42,17 @@ public:
         ulong                      fenceValue = 0;
     };
     // Upload context for one time submits
-    struct UploadContext {
-        CommandListHandle   commandList = nullptr;
-        ComPtr<ID3D12Fence> fence;
-        HANDLE              fenceEvent = nullptr;
-        ulong               fenceValue = 0;
+    class UploadContext
+    {
+    public:
+        void init( const ComPtr<ID3D12Device2>& device );
+        void oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( CommandListHandle& )>& commands );
+
+    private:
+        CommandListHandle   _commandList = nullptr;
+        ComPtr<ID3D12Fence> _fence;
+        HANDLE              _fenceEvent = nullptr;
+        ulong               _fenceValue = 0;
     };
     // Resources
     struct Resources {
@@ -60,7 +67,7 @@ public:
     };
     // Graphics API Context
     struct Context {
-        
+
         ComPtr<IDXGIAdapter4> adapter;
         ComPtr<ID3D12Device2> device;
 
