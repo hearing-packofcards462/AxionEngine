@@ -24,8 +24,10 @@ public:
     virtual void               setCurrentFrame( uint index ) = 0;
     virtual const Description& getDescription() const        = 0;
 
-    virtual void resourceBarrier( const TextureHandle& texture, ResourceState newState )    = 0;
-    virtual void clearTexture( const TextureHandle& texture, const ClearValue& clearValue ) = 0;
+    virtual void barrier( const TextureHandle& texture, ResourceState newState )                                                          = 0;
+    virtual void barrier( const BufferHandle& buffer, ResourceState newState )                                                            = 0;
+    virtual void clearTexture( const TextureHandle& texture, const ClearValue& clearValue )                                               = 0;
+    virtual void copyBuffer( const BufferHandle& dst, const BufferHandle& src, ulong numBytes, ulong dstOffset = 0, ulong srcOffset = 0 ) = 0;
 
     // virtual void beginRenderPass( /* ... */ ) = 0;
     // virtual void endRenderPass()              = 0;
@@ -36,6 +38,6 @@ public:
 
 typedef ICommandList::Description CommandListDesc;
 
-} // namespace RHI
+} // namespace Graphics::RHI
 
 AXION_NAMESPACE_END

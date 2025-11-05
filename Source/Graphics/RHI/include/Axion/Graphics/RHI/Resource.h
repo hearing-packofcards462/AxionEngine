@@ -7,6 +7,7 @@ namespace Graphics::RHI {
 
 DEFINE_HANDLE_FOR_TYPE( ITexture, Texture )
 
+// Texture are always GPU. If you waNT TO wark with CPU ones, use a buffer.
 class ITexture : public IResource
 {
 public:
@@ -18,7 +19,7 @@ public:
         uint             sampleCount = 1;
         uint             arraySize   = 1;
         std::string      debugName   = "";
-        TextureViewFlags viewFlags = TextureViewShaderResource;
+        TextureViewFlags viewFlags   = TextureViewShaderResource;
     };
     virtual ~ITexture()                                         = default;
     virtual const ITexture::Description& getDescription() const = 0;
@@ -32,12 +33,12 @@ class IBuffer : public IResource
 {
 public:
     struct Description {
-        size_t      size       = 0;
-        uint        stride     = 0; // for structured buffers
-        MemoryUsage memory     = MemoryUsage::GPUOnly;
-        BufferUsage usageFlags = BufferUsage::None;
-        BufferViewFlags  viewFlags  = BufferViewNone;
-        std::string debugName  = "";
+        size_t          size       = 0;
+        uint            stride     = 0; // for structured buffers
+        MemoryUsage     memoryType = MemoryUsage::GPUOnly;
+        BufferUsage     usageFlags = BufferUsage::None;
+        BufferViewFlags viewFlags  = BufferViewNone;
+        std::string     debugName  = "";
     };
 
     virtual ~IBuffer()                                = default;

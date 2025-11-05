@@ -1,7 +1,7 @@
 #pragma once
-#include "DX12Device.hpp"
 #include "Axion/Common/Math.h"
 #include "Axion/Graphics/RHI/Resource.h"
+#include "DX12Device.hpp"
 #include "StateTracking.h"
 
 AXION_NAMESPACE_BEGIN
@@ -17,11 +17,10 @@ public:
     DX12Texture( const TextureDesc&   desc,
                  DX12Device::Context& ctx,
                  const void*          initialData = nullptr );
-    DX12Texture( const ComPtr<ID3D12Device2>&  device,
-                 const ComPtr<ID3D12Resource>& resource,
+    DX12Texture( const ComPtr<ID3D12Resource>& resource,
                  const TextureDesc&            desc,
-                 bool                          useDecriptionParams,
-                 DX12Device::Resources&        resources );
+                 DX12Device::Context&          ctx,
+                 bool                          useDecriptionParams );
 
     const TextureDesc&    getDescription() const override;
     void                  setDebugName( const std::string& name ) override;
@@ -35,7 +34,7 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE getDSV() const { return _dsvHandle; }
 
 private:
-    void createViews( const ComPtr<ID3D12Device2>& device, DX12Device::Resources& resources, bool useDescriptionParams );
+    void createViews( DX12Device::Context& ctx, bool useDescriptionParams );
     void uploadInitialData( DX12Device::Context& ctx, const void* initialData );
 
     TextureDesc          _desc;

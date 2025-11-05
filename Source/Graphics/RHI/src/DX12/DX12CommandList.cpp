@@ -40,7 +40,7 @@ const CommandListDesc& DX12CommandList::getDescription() const {
     return _desc;
 }
 
-void DX12CommandList::resourceBarrier( const TextureHandle& texture, ResourceState newState ) {
+void DX12CommandList::barrier( const TextureHandle& texture, ResourceState newState ) {
 
     auto& tracker = static_cast<DX12Texture*>( texture.get() )->stateTracker();
 
@@ -57,6 +57,23 @@ void DX12CommandList::resourceBarrier( const TextureHandle& texture, ResourceSta
     tracker.setState( newState );
 }
 
+void DX12CommandList::barrier( const BufferHandle& buffer, ResourceState newState ) {
+
+    auto& tracker = static_cast<DX12Buffer*>( buffer.get() )->stateTracker();
+
+    if ( !tracker.needsTransition( newState ) )
+        return;
+
+    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        buffer->getNativeObject( ObjectTypes::DX12_Resource ),
+        DX12Translator::get( tracker.getCurrentState() ),
+        DX12Translator::get( newState ) );
+
+    _cmdList->ResourceBarrier( 1, &barrier );
+
+    tracker.setState( newState );
+}
+
 void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearValue& clearValue ) {
     auto*              dxTex = static_cast<DX12Texture*>( texture.get() );
     const TextureDesc& desc  = dxTex->getDescription();
@@ -64,7 +81,7 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
     // Clear RenderTarget
     if ( desc.viewFlags & TextureViewRenderTarget )
     {
-        resourceBarrier( texture, ResourceState::RenderTarget );
+        barrier( texture, ResourceState::RenderTarget );
         _cmdList->ClearRenderTargetView( dxTex->getRTV(), &clearValue.color.x, 0, nullptr );
         return;
     }
@@ -72,7 +89,7 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
     // Clear DepthStencil
     if ( desc.viewFlags & TextureViewDepthStencil )
     {
-        resourceBarrier( texture, ResourceState::DepthWrite );
+        barrier( texture, ResourceState::DepthWrite );
         _cmdList->ClearDepthStencilView(
             dxTex->getDSV(),
             D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
@@ -86,7 +103,7 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
     // Clear UAV
     if ( desc.viewFlags & TextureViewUnorderedAccess )
     {
-        resourceBarrier( texture, ResourceState::UnorderedAccess );
+        barrier( texture, ResourceState::UnorderedAccess );
         float vals[4] = { clearValue.color.x, clearValue.color.y, clearValue.color.z, clearValue.color.w };
         // _cmdList->ClearUnorderedAccessViewFloat(
         //     dxTex->getGPUUAV(), // GPU handle
@@ -98,6 +115,15 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
         // );
         return;
     }
+}
+
+void DX12CommandList::copyBuffer( const BufferHandle& dst, const BufferHandle& src, ulong numBytes, ulong dstOffset, ulong srcOffset ) {
+
+    barrier( dst, ResourceState::CopyDest );
+    barrier( src, ResourceState::CopySource );
+
+    _cmdList->CopyBufferRegion(
+        dst->getNativeObject( ObjectTypes::DX12_Resource ), dstOffset, src->getNativeObject( ObjectTypes::DX12_Resource ), srcOffset, numBytes );
 }
 
 NativeObject DX12CommandList::getNativeObject( ObjectType objectType ) {

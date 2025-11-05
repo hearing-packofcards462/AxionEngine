@@ -35,24 +35,12 @@ DX12Device::DX12Device( const IDX12Device::Description& desc ) {
         _ctx.computeQueue = createCommandQueue( QueueType::Compute, "Compute Queue" );
         _ctx.copyQueue    = createCommandQueue( QueueType::Transfer, "Copy Queue" );
 
-        _ctx.resources.heapSRV.init( _ctx.device, DX12DescriptorHeap::Type::CBV_SRV_UAV, desc.shaderResourceViewHeapSize );
-        _ctx.resources.heapRTV.init( _ctx.device, DX12DescriptorHeap::Type::RTV, desc.renderTargetViewHeapSize );
-        _ctx.resources.heapDSV.init( _ctx.device, DX12DescriptorHeap::Type::DSV, desc.depthStencilViewHeapSize );
+        _ctx.heapSRV.init( _ctx.device, DX12DescriptorHeap::Type::CBV_SRV_UAV, desc.shaderResourceViewHeapSize );
+        _ctx.heapRTV.init( _ctx.device, DX12DescriptorHeap::Type::RTV, desc.renderTargetViewHeapSize );
+        _ctx.heapDSV.init( _ctx.device, DX12DescriptorHeap::Type::DSV, desc.depthStencilViewHeapSize );
 
-        // struct UploadContext {
-        // CommandListHandle   commandList = nullptr;
-        // ComPtr<ID3D12Fence> fence;
-        // HANDLE              fenceEvent = nullptr;
-        // ulong               fenceValue = 0;
-
-        // _ctx.uploadContext.commandList = createCommandList( { .queueType = QueueType::Graphics, .numFrames = 1 } );
-        // DX_CHECK( _ctx.device->CreateFence(
-        //     0,
-        //     D3D12_FENCE_FLAG_NONE,
-        //     IID_PPV_ARGS( &_ctx.uploadContext.fence ) ) );
-
-        // _ctx.uploadContext.fe = ::CreateEvent( nullptr, FALSE, FALSE, nullptr );
-        // AXION_LOG_ASSERT( q->fenceEvent, Logger::Module::RHI, "Failed to create queue fence event." );
+        _ctx.uploadContext.init(_ctx.device);
+        
     }
 
     _initialized = true;
@@ -335,15 +323,15 @@ void RHI::DX12Device::checkExtensions() {
 
         csDesc.ByteStride = 16;
         argDesc.Type      = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
-        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.resources.drawIndirectSignature ) );
+        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.drawIndirectSignature ) );
 
         csDesc.ByteStride = 20;
         argDesc.Type      = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
-        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.resources.drawIndexedIndirectSignature ) );
+        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.drawIndexedIndirectSignature ) );
 
         csDesc.ByteStride = 12;
         argDesc.Type      = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH;
-        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.resources.dispatchIndirectSignature ) );
+        _ctx.device->CreateCommandSignature( &csDesc, nullptr, IID_PPV_ARGS( &_ctx.dispatchIndirectSignature ) );
     }
 
     if ( _desc.enableHeapDirectlyIndexed )
@@ -472,8 +460,13 @@ std::string RHI::DX12Device::toString() const {
 
 void DX12Device::UploadContext::init( const ComPtr<ID3D12Device2>& device ) {
 
-    CommandListDesc cmdDesc = { .queueType = QueueType::Graphics, .numFrames = 1 };
-    _commandList            = NEW_S( DX12CommandList )( device, cmdDesc );
+    auto dx12type = DX12Translator::get( QueueType::Graphics );
+
+    DX_CHECK( device->CreateCommandAllocator( dx12type, IID_PPV_ARGS( &_cmdAllocator ) ) );
+
+    DX_CHECK( device->CreateCommandList( 0, dx12type, _cmdAllocator.Get(), nullptr, IID_PPV_ARGS( &_cmdList ) ) );
+
+    DX_CHECK( _cmdList->Close() );
 
     // Create fence
     DX_CHECK( device->CreateFence(
@@ -484,17 +477,19 @@ void DX12Device::UploadContext::init( const ComPtr<ID3D12Device2>& device ) {
     _fenceEvent = ::CreateEvent( nullptr, FALSE, FALSE, nullptr );
 }
 
-void DX12Device::UploadContext::oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( CommandListHandle& )>& commands ) {
+void DX12Device::UploadContext::oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( const ComPtr<ID3D12GraphicsCommandList>& )>& commands ) {
 
-    _commandList->begin(); // Reset & begin recording
-    commands( _commandList );
-    _commandList->end();
+    DX_CHECK( _cmdAllocator->Reset() );
+    DX_CHECK( _cmdList->Reset( _cmdAllocator.Get(), nullptr ) );
+    commands( _cmdList );
+    DX_CHECK( _cmdList->Close() );
 
     // Submit to queue
-    ID3D12CommandList* lists[]    = { _commandList->getNativeObject( ObjectTypes::DX12_CommandList ) };
+    ID3D12CommandList* lists[] = { _cmdList.Get() };
     uploadQueue->queue->ExecuteCommandLists( 1, lists );
 
     // Fence
+    _fenceValue++;
     DX_CHECK( uploadQueue->queue->Signal( _fence.Get(), _fenceValue ) );
 
     if ( _fence->GetCompletedValue() < _fenceValue )
@@ -502,9 +497,6 @@ void DX12Device::UploadContext::oneTimeSubmit( const std::unique_ptr<Queue>& upl
         DX_CHECK( _fence->SetEventOnCompletion( _fenceValue, _fenceEvent ) );
         WaitForSingleObject( _fenceEvent, INFINITE );
     }
-
-    _fenceValue++;
-
 }
 
 } // namespace Graphics::RHI

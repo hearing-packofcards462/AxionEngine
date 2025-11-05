@@ -43,6 +43,30 @@ Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
 #ifdef RAIKO_DEBUG
     _commandList->setDebugName( "Graphics Command List" );
 #endif
+
+    // // Texture description
+    // RHI::TextureDesc desc {};
+    // desc.size      = { 2, 2, 1 }; // 2x2 texture
+    // desc.mipLevels = 1;
+    // desc.arraySize = 1;
+    // desc.dimension = TextureDimension::Texture2D;
+    // desc.format    = Format::RGBA8_UINT;        // RGBA8 uint
+    // desc.viewFlags = TextureViewShaderResource; // For SRV
+
+    // // Initial data: RGBA8 uint (4 bytes per pixel), red color
+    // uint8_t initialData[2 * 2 * 4] = {
+    //     255, 0, 0, 255, 255, 0, 0, 255, // row 0
+    //     255,
+    //     0,
+    //     0,
+    //     255,
+    //     255,
+    //     0,
+    //     0,
+    //     255 // row 1
+    // };
+
+    // auto tex = _device->createTexture( desc, initialData );
 }
 
 Renderer::~Renderer() {
@@ -58,8 +82,8 @@ void Renderer::render() {
     _commandList->begin();
     _commandList->clearTexture( _swapchain->getSwapImages()[_currentFrame],
                                 ClearValue { .color = { 0.4f, 0.6f, 0.9f, 1.0f } } );
-    _commandList->resourceBarrier( _swapchain->getSwapImages()[_currentFrame],
-                                   RHI::ResourceState::Present );
+    _commandList->barrier( _swapchain->getSwapImages()[_currentFrame],
+                           RHI::ResourceState::Present );
     _commandList->end();
 
     // Submit + signal

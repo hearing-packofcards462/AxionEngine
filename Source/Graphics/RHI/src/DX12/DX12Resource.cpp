@@ -11,40 +11,14 @@ namespace Graphics::RHI {
 DX12Texture::DX12Texture( const TextureDesc& desc, DX12Device::Context& ctx, const void* initialData )
     : _desc( desc )
     , _stateTracker( desc.mipLevels, desc.arraySize ) {
-
     D3D12_RESOURCE_DESC dx12Desc = {};
-    dx12Desc.Dimension           = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
     dx12Desc.Width               = desc.size.width;
     dx12Desc.Height              = desc.size.height;
     dx12Desc.MipLevels           = static_cast<UINT16>( desc.mipLevels );
-    dx12Desc.DepthOrArraySize    = ( desc.dimension == TextureDimension::Texture3D ) ? static_cast<UINT16>( desc.size.depth ) : static_cast<UINT16>( desc.arraySize );
+    dx12Desc.DepthOrArraySize    = ( desc.dimension == TextureDimension::Texture3D ) ? (ushort)desc.size.depth : (ushort)desc.arraySize;
     dx12Desc.Format              = DX12Translator::get( desc.format );
-    dx12Desc.SampleDesc.Count    = desc.sampleCount;
+    dx12Desc.SampleDesc.Count    = 1;
     dx12Desc.Flags               = D3D12_RESOURCE_FLAG_NONE;
-
-    ResourceState initialState = ResourceState::Common;
-    if ( initialData )
-        initialState = ResourceState::CopyDest;
-    else
-    {
-        if ( desc.viewFlags & TextureViewRenderTarget )
-        {
-            dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-            initialState = ResourceState::RenderTarget;
-        }
-        if ( desc.viewFlags & TextureViewDepthStencil )
-        {
-            dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-            initialState = ResourceState::DepthWrite;
-        }
-        if ( desc.viewFlags & TextureViewUnorderedAccess )
-        {
-            dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-            initialState = ResourceState::UnorderedAccess;
-        }
-        if ( _desc.viewFlags & TextureViewShaderResource )
-            initialState = ResourceState::GeneralRead;
-    }
 
     switch ( desc.dimension )
     {
@@ -59,7 +33,15 @@ DX12Texture::DX12Texture( const TextureDesc& desc, DX12Device::Context& ctx, con
             break;
     }
 
-    CD3DX12_HEAP_PROPERTIES heapProps( D3D12_HEAP_TYPE_DEFAULT );
+    if ( desc.viewFlags & TextureViewRenderTarget )
+        dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+    if ( desc.viewFlags & TextureViewDepthStencil )
+        dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+    if ( desc.viewFlags & TextureViewUnorderedAccess )
+        dx12Desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+    ResourceState           initialState = DX12Translator::getInitialState( desc.viewFlags );
+    CD3DX12_HEAP_PROPERTIES heapProps    = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT );
 
     DX_CHECK( ctx.device->CreateCommittedResource(
         &heapProps,
@@ -71,16 +53,21 @@ DX12Texture::DX12Texture( const TextureDesc& desc, DX12Device::Context& ctx, con
 
     _stateTracker.setState( initialState );
 
-    createViews( ctx.device, ctx.resources, true );
+    createViews( ctx, true );
+    setDebugName( desc.debugName );
 
-    setDebugName( _desc.debugName );
+    if ( initialData )
+        uploadInitialData( ctx, initialData );
 }
 
-DX12Texture::DX12Texture( const ComPtr<ID3D12Device2>& device, const ComPtr<ID3D12Resource>& resource, const TextureDesc& desc, bool useDecriptionParams, DX12Device::Resources& resources )
+DX12Texture::DX12Texture( const ComPtr<ID3D12Resource>& resource,
+                          const TextureDesc&            desc,
+                          DX12Device::Context&          ctx,
+                          bool                          useDecriptionParams )
     : _desc( desc )
     , _resource( resource )
     , _stateTracker( desc.mipLevels, desc.arraySize ) {
-    createViews( device, resources, useDecriptionParams );
+    createViews( ctx, useDecriptionParams );
     setDebugName( _desc.debugName );
 }
 
@@ -91,7 +78,7 @@ const TextureDesc& DX12Texture::getDescription() const {
     return _desc;
 }
 
-void DX12Texture::createViews( const ComPtr<ID3D12Device2>& device, DX12Device::Resources& resources, bool useDescriptionParams ) {
+void DX12Texture::createViews( DX12Device::Context& ctx, bool useDescriptionParams ) {
     if ( _desc.viewFlags & TextureViewShaderResource )
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -100,8 +87,8 @@ void DX12Texture::createViews( const ComPtr<ID3D12Device2>& device, DX12Device::
         srvDesc.ViewDimension                   = DX12Translator::getSRVDimension( _desc.dimension ); // helper
         srvDesc.Texture2D.MipLevels             = _desc.mipLevels;
 
-        _srvHandle = resources.heapSRV.allocateCPU();
-        device->CreateShaderResourceView( _resource.Get(), useDescriptionParams ? &srvDesc : nullptr, _srvHandle );
+        _srvHandle = ctx.heapSRV.allocateCPU();
+        ctx.device->CreateShaderResourceView( _resource.Get(), useDescriptionParams ? &srvDesc : nullptr, _srvHandle );
     }
 
     if ( _desc.viewFlags & TextureViewRenderTarget )
@@ -109,8 +96,8 @@ void DX12Texture::createViews( const ComPtr<ID3D12Device2>& device, DX12Device::
         D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
         rtvDesc.Format                        = DX12Translator::get( _desc.format );
         rtvDesc.ViewDimension                 = DX12Translator::getRTVDimension( _desc.dimension );
-        _rtvHandle                            = resources.heapRTV.allocateCPU();
-        device->CreateRenderTargetView( _resource.Get(), useDescriptionParams ? &rtvDesc : nullptr, _rtvHandle );
+        _rtvHandle                            = ctx.heapRTV.allocateCPU();
+        ctx.device->CreateRenderTargetView( _resource.Get(), useDescriptionParams ? &rtvDesc : nullptr, _rtvHandle );
     }
 
     if ( _desc.viewFlags & TextureViewDepthStencil )
@@ -118,12 +105,75 @@ void DX12Texture::createViews( const ComPtr<ID3D12Device2>& device, DX12Device::
         D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
         dsvDesc.Format                        = DX12Translator::get( _desc.format );
         dsvDesc.ViewDimension                 = DX12Translator::getDSVDimension( _desc.dimension );
-        _dsvHandle                            = resources.heapDSV.allocateCPU();
-        device->CreateDepthStencilView( _resource.Get(), useDescriptionParams ? &dsvDesc : nullptr, _dsvHandle );
+        _dsvHandle                            = ctx.heapDSV.allocateCPU();
+        ctx.device->CreateDepthStencilView( _resource.Get(), useDescriptionParams ? &dsvDesc : nullptr, _dsvHandle );
     }
 }
 
 void DX12Texture::uploadInitialData( DX12Device::Context& ctx, const void* initialData ) {
+
+    size_t     bufferSize = _desc.size.width * _desc.size.height * _desc.size.depth * getFormatBytes( _desc.format );
+    DX12Buffer staging(
+        DX12Buffer::Description {
+            .size       = bufferSize,
+            .memoryType = MemoryUsage::CPUVisible,
+            .viewFlags  = BufferViewNone },
+        ctx );
+
+    // Map + copy data into staging
+    void* mapped = staging.map();
+    std::memcpy( mapped, initialData, bufferSize );
+    staging.unmap();
+
+    ResourceState firstUseState = _stateTracker.getCurrentState();
+
+    // --- Upload via one-time submit ---
+    ctx.uploadContext.oneTimeSubmit( ctx.primaryQueue, [&]( const ComPtr<ID3D12GraphicsCommandList>& cmd ) {
+        // Transition staging buffer to COPY_SOURCE
+        CD3DX12_RESOURCE_BARRIER barrierStaging = CD3DX12_RESOURCE_BARRIER::Transition(
+            staging.getNativeObject( ObjectTypes::DX12_Resource ),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            D3D12_RESOURCE_STATE_COPY_SOURCE );
+        cmd->ResourceBarrier( 1, &barrierStaging );
+
+        // Transition texture to COPY_DEST
+        CD3DX12_RESOURCE_BARRIER barrierTex = CD3DX12_RESOURCE_BARRIER::Transition(
+            _resource.Get(),
+            DX12Translator::get( _stateTracker.getCurrentState() ),
+            D3D12_RESOURCE_STATE_COPY_DEST );
+        cmd->ResourceBarrier( 1, &barrierTex );
+
+        // Copy buffer -> texture
+        D3D12_TEXTURE_COPY_LOCATION dstLoc {};
+        dstLoc.pResource        = _resource.Get();
+        dstLoc.Type             = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+        dstLoc.SubresourceIndex = 0;
+        D3D12_RESOURCE_DESC dstDesc = _resource->GetDesc();
+
+        D3D12_TEXTURE_COPY_LOCATION srcLoc {};
+        srcLoc.pResource = staging.getNativeObject( ObjectTypes::DX12_Resource );
+        srcLoc.Type      = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+        ctx.device->GetCopyableFootprints(
+            &dstDesc,
+            0,
+            1,
+            0,
+            &srcLoc.PlacedFootprint,
+            nullptr,
+            nullptr,
+            nullptr );
+
+        cmd->CopyTextureRegion( &dstLoc, 0, 0, 0, &srcLoc, nullptr );
+
+        // Transition texture back to first use
+        CD3DX12_RESOURCE_BARRIER barrierBack = CD3DX12_RESOURCE_BARRIER::Transition(
+            _resource.Get(),
+            D3D12_RESOURCE_STATE_COPY_DEST,
+            DX12Translator::get( firstUseState ) );
+        cmd->ResourceBarrier( 1, &barrierBack );
+    } );
+
+    // Staging buffer deleted automatically via RAII
 }
 
 void DX12Texture::setDebugName( const std::string& name ) {
@@ -161,20 +211,24 @@ DX12Buffer::DX12Buffer( const BufferDesc&    desc,
                         const void*          initialData )
     : _desc( desc ) {
 
-    // Choose proper heap
+    ResourceState         initialState;
     D3D12_HEAP_PROPERTIES heapProps {};
-    switch ( desc.memory )
+    switch ( desc.memoryType )
     {
         case MemoryUsage::CPUVisible:
-            heapProps = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD );
+            initialState = ResourceState::GeneralRead;
+            heapProps    = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD );
             break;
         case MemoryUsage::Readback:
-            heapProps = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_READBACK );
+            initialState = ResourceState::CopyDest;
+            heapProps    = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_READBACK );
             break;
         default:
-            heapProps = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT );
+            initialState = ResourceState::Common;
+            heapProps    = CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT );
             break;
     }
+    _stateTracker.setState( initialState );
 
     // Resource flags (for UAV)
     D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
@@ -183,18 +237,7 @@ DX12Buffer::DX12Buffer( const BufferDesc&    desc,
 
     auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer( desc.size, flags );
 
-    // --- Infer initial state ---
-    ResourceState initialState = ResourceState::Common;
-    if ( _desc.memory == MemoryUsage::CPUVisible )
-        initialState = ResourceState::GeneralRead;
-    else if ( ( _desc.viewFlags & BufferViewConstantBuffer ) != BufferViewNone )
-        initialState = ResourceState::ConstantBuffer;
-    else if ( ( _desc.viewFlags & BufferViewShaderResource ) != BufferViewNone )
-        initialState = ResourceState::ShaderResource;
-
-    D3D12_RESOURCE_STATES dxInitState = D3D12_RESOURCE_STATE_COMMON;
-    dxInitState                       = DX12Translator::get( initialState );
-
+    D3D12_RESOURCE_STATES dxInitState = DX12Translator::get( initialState );
     DX_CHECK( ctx.device->CreateCommittedResource(
         &heapProps,
         D3D12_HEAP_FLAG_NONE,
@@ -205,17 +248,15 @@ DX12Buffer::DX12Buffer( const BufferDesc&    desc,
 
     setDebugName( desc.debugName );
 
-    _stateTracker.setState( initialState );
-
-    // if ( initialData )
-    //     uploadInitialData( initialData );
+    if ( initialData )
+        uploadInitialData( ctx, initialData );
 
     createViews( ctx );
 }
 
 void* DX12Buffer::map() {
     AXION_LOG_ASSERT(
-        _desc.memory == MemoryUsage::CPUVisible || _desc.memory == MemoryUsage::Readback,
+        _desc.memoryType == MemoryUsage::CPUVisible || _desc.memoryType == MemoryUsage::Readback,
         Logger::Module::RHI,
         "Map called on non-CPU buffer" );
 
@@ -257,10 +298,8 @@ void DX12Buffer::createViews( DX12Device::Context& ctx ) {
         cbv.BufferLocation = _resource->GetGPUVirtualAddress();
         cbv.SizeInBytes    = (UINT)Math::AlignUp( _desc.size, (size_t)256 );
 
-        _cbvHandle = ctx.resources.heapSRV.allocateCPU();
+        _cbvHandle = ctx.heapSRV.allocateCPU();
         ctx.device->CreateConstantBufferView( &cbv, _srvHandle );
-
-        _stateTracker.setState( ResourceState::ConstantBuffer );
     }
 
     // SRV
@@ -273,10 +312,8 @@ void DX12Buffer::createViews( DX12Device::Context& ctx ) {
         desc.Buffer.StructureByteStride = _desc.stride;
         desc.Shader4ComponentMapping    = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-        _srvHandle = ctx.resources.heapSRV.allocateCPU();
+        _srvHandle = ctx.heapSRV.allocateCPU();
         ctx.device->CreateShaderResourceView( _resource.Get(), &desc, _srvHandle );
-
-        _stateTracker.setState( ResourceState::ShaderResource );
     }
 
     // UAV
@@ -289,98 +326,85 @@ void DX12Buffer::createViews( DX12Device::Context& ctx ) {
         desc.Buffer.NumElements         = (UINT)( _desc.size / _desc.stride );
         desc.Buffer.StructureByteStride = _desc.stride;
 
-        _uavHandle = ctx.resources.heapSRV.allocateCPU();
+        _uavHandle = ctx.heapSRV.allocateCPU();
         ctx.device->CreateUnorderedAccessView( _resource.Get(), nullptr, &desc, _srvHandle );
-
-        _stateTracker.setState( ResourceState::UnorderedAccess );
     }
 }
 
 void DX12Buffer::uploadInitialData( DX12Device::Context& ctx, const void* initialData ) {
-    // if ( !initialData )
-    //     return;
+    // --- Fast path: CPU-visible buffer (map+copy) ---
+    if ( _desc.memoryType == MemoryUsage::CPUVisible )
+    {
+        void* dst = map();
+        std::memcpy( dst, initialData, _desc.size );
+        unmap();
+    }
 
-    // // CPU-visible: just map and copy
-    // if ( _desc.memory == MemoryUsage::CPUVisible )
-    // {
-    //     void* dst = map();
-    //     std::memcpy( dst, initialData, _desc.size );
-    //     unmap();
+    // --- Create staging (upload) buffer (still as a DX12Buffer RHI object) ---
+    // MemoryUsage::CPUVisible means upload heap here
+    DX12Buffer staging( DX12Buffer::Description {
+                            .size       = _desc.size,
+                            .memoryType = MemoryUsage::CPUVisible,
+                            .viewFlags  = BufferViewNone },
+                        ctx );
 
-    //     _stateTracker.setState( ResourceState::ConstantBuffer ); // Or appropriate state for CPU-visible
-    //     return;
-    // }
+    // Map & copy into staging
+    {
+        void* mapped = staging.map();
+        std::memcpy( mapped, initialData, _desc.size );
+        staging.unmap();
+    }
 
-    // // GPU-only: create a temporary upload buffer
-    // ComPtr<ID3D12Resource> uploadBuffer;
-    // {
-    //     CD3DX12_HEAP_PROPERTIES heapProps( D3D12_HEAP_TYPE_UPLOAD );
-    //     auto                    bufDesc = CD3DX12_RESOURCE_DESC::Buffer( _desc.size );
-    //     DX_CHECK( ctx.device->CreateCommittedResource(
-    //         &heapProps,
-    //         D3D12_HEAP_FLAG_NONE,
-    //         &bufDesc,
-    //         D3D12_RESOURCE_STATE_GENERIC_READ,
-    //         nullptr,
-    //         IID_PPV_ARGS( &uploadBuffer ) ) );
-    // }
+    ctx.uploadContext.oneTimeSubmit( ctx.primaryQueue, [&]( const ComPtr<ID3D12GraphicsCommandList>& cmd ) {
+        // --- Transition staging buffer to COPY_SOURCE ---
+        ResourceState currentStagingState = staging.stateTracker().getCurrentState();
+        if ( currentStagingState != ResourceState::CopySource )
+        {
+            CD3DX12_RESOURCE_BARRIER bSrc = CD3DX12_RESOURCE_BARRIER::Transition(
+                staging.getNativeObject( ObjectTypes::DX12_Resource ),
+                DX12Translator::get( currentStagingState ),
+                D3D12_RESOURCE_STATE_COPY_SOURCE );
+            cmd->ResourceBarrier( 1, &bSrc );
+            staging.stateTracker().setState( ResourceState::CopySource );
+        }
 
-    // // Map + copy data
-    // {
-    //     void*         mapped = nullptr;
-    //     CD3DX12_RANGE readRange( 0, 0 );
-    //     uploadBuffer->Map( 0, &readRange, &mapped );
-    //     std::memcpy( mapped, initialData, _desc.size );
-    //     uploadBuffer->Unmap( 0, nullptr );
-    // }
+        // --- Transition destination buffer to COPY_DEST ---
+        ResourceState currentDstState = _stateTracker.getCurrentState();
+        if ( currentDstState != ResourceState::CopyDest )
+        {
+            CD3DX12_RESOURCE_BARRIER bDst = CD3DX12_RESOURCE_BARRIER::Transition(
+                _resource.Get(),
+                DX12Translator::get( currentDstState ),
+                D3D12_RESOURCE_STATE_COPY_DEST );
+            cmd->ResourceBarrier( 1, &bDst );
+            _stateTracker.setState( ResourceState::CopyDest );
+        }
 
-    // auto cmdList = ctx.resources.uploadContext.commandList->get(); // ID3D12GraphicsCommandList*
+        // --- Issue the copy ---
+        cmd->CopyBufferRegion(
+            _resource.Get(),
+            0,
+            staging.getNativeObject( ObjectTypes::DX12_Resource ),
+            0,
+            _desc.size );
 
-    // // Reset the command list
-    // ctx.resources.uploadContext.commandList->reset();
+        // --- Optionally transition dst back to previous or desired first-use state ---
+        if ( _desc.memoryType == MemoryUsage::GPUOnly )
+        {
+            ResourceState firstUseState = ResourceState::Common; // or infer from usage flags
+            if ( _stateTracker.getCurrentState() != firstUseState )
+            {
+                CD3DX12_RESOURCE_BARRIER bBack = CD3DX12_RESOURCE_BARRIER::Transition(
+                    _resource.Get(),
+                    DX12Translator::get( _stateTracker.getCurrentState() ),
+                    DX12Translator::get( firstUseState ) );
+                cmd->ResourceBarrier( 1, &bBack );
+                _stateTracker.setState( firstUseState );
+            }
+        }
+    } );
 
-    // // Copy from upload buffer to GPU buffer
-    // cmdList->CopyBufferRegion( _resource.Get(), 0, uploadBuffer.Get(), 0, _desc.size );
-
-    // // Transition GPU buffer to its intended usage
-    // D3D12_RESOURCE_STATES targetState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-    // if ( ( _desc.viewFlags & BufferViewUnorderedAccess ) != BufferViewNone )
-    //     targetState = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-
-    // CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-    //     _resource.Get(),
-    //     D3D12_RESOURCE_STATE_COMMON, // initial
-    //     targetState                  // final
-    // );
-    // cmdList->ResourceBarrier( 1, &barrier );
-
-    // DX_CHECK( cmdList->Close() );
-
-    // // Execute the upload
-    // ID3D12CommandList* lists[] = { cmdList };
-    // auto               queue   = ctx.primaryQueue->queue.Get();
-    // queue->ExecuteCommandLists( 1, lists );
-
-    // // Signal & wait
-    // ctx.resources.uploadContext.fenceValue++;
-    // DX_CHECK( queue->Signal( ctx.resources.uploadContext.fence.Get(), ctx.resources.uploadContext.fenceValue ) );
-
-    // if ( ctx.resources.uploadContext.fence->GetCompletedValue() < ctx.resources.uploadContext.fenceValue )
-    // {
-    //     DX_CHECK( ctx.resources.uploadContext.fence->SetEventOnCompletion(
-    //         ctx.resources.uploadContext.fenceValue,
-    //         ctx.resources.uploadContext.fenceEvent ) );
-    //     WaitForSingleObject( ctx.resources.uploadContext.fenceEvent, INFINITE );
-    // }
-
-    // // Update state tracker
-    // ResourceState finalState = ResourceState::VertexBuffer;
-    // if ( ( _desc.viewFlags & BufferViewConstantBuffer ) != BufferViewNone )
-    //     finalState = ResourceState::ConstantBuffer;
-    // else if ( ( _desc.viewFlags & BufferViewUnorderedAccess ) != BufferViewNone )
-    //     finalState = ResourceState::UnorderedAccess;
-
-    // _stateTracker.setState( finalState );
+    // Staging buffer will automatically be deleted due to RAII COM ptrs
 }
 
 DX12Buffer::~DX12Buffer() {

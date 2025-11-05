@@ -46,24 +46,14 @@ public:
     {
     public:
         void init( const ComPtr<ID3D12Device2>& device );
-        void oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( CommandListHandle& )>& commands );
+        void oneTimeSubmit( const std::unique_ptr<Queue>& uploadQueue, const std::function<void( const ComPtr<ID3D12GraphicsCommandList>& )>& commands );
 
     private:
-        CommandListHandle   _commandList = nullptr;
-        ComPtr<ID3D12Fence> _fence;
-        HANDLE              _fenceEvent = nullptr;
-        ulong               _fenceValue = 0;
-    };
-    // Resources
-    struct Resources {
-
-        DX12DescriptorHeap heapSRV;
-        DX12DescriptorHeap heapRTV;
-        DX12DescriptorHeap heapDSV;
-
-        ComPtr<ID3D12CommandSignature> drawIndirectSignature;
-        ComPtr<ID3D12CommandSignature> drawIndexedIndirectSignature;
-        ComPtr<ID3D12CommandSignature> dispatchIndirectSignature;
+        ComPtr<ID3D12GraphicsCommandList> _cmdList;
+        ComPtr<ID3D12CommandAllocator>    _cmdAllocator;
+        ComPtr<ID3D12Fence>               _fence;
+        HANDLE                            _fenceEvent = nullptr;
+        ulong                             _fenceValue = 0;
     };
     // Graphics API Context
     struct Context {
@@ -75,9 +65,15 @@ public:
         std::unique_ptr<Queue> computeQueue;
         std::unique_ptr<Queue> copyQueue;
 
+        DX12DescriptorHeap heapSRV;
+        DX12DescriptorHeap heapRTV;
+        DX12DescriptorHeap heapDSV;
+
         UploadContext uploadContext = {};
 
-        Resources resources;
+        ComPtr<ID3D12CommandSignature> drawIndirectSignature;
+        ComPtr<ID3D12CommandSignature> drawIndexedIndirectSignature;
+        ComPtr<ID3D12CommandSignature> dispatchIndirectSignature;
     };
 
 private:

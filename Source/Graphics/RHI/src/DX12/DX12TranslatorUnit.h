@@ -343,7 +343,34 @@ constexpr D3D12_RESOURCE_STATES get( ResourceState s ) {
         dx |= D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE;
 
     return dx;
-}
+};
+
+constexpr CD3DX12_HEAP_PROPERTIES getHeapProps( MemoryUsage mem ) {
+    switch ( mem )
+    {
+        case MemoryUsage::CPUVisible:
+            return CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD );
+        case MemoryUsage::Readback:
+            return CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_READBACK );
+        default:
+            return CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT );
+    }
+};
+
+static ResourceState getInitialState( TextureViewFlags view ) {
+
+    // GPU-only: infer from view
+    if ( view & TextureViewRenderTarget )
+        return ResourceState::RenderTarget;
+    if ( view & TextureViewDepthStencil )
+        return ResourceState::DepthWrite;
+    if ( view & TextureViewUnorderedAccess )
+        return ResourceState::UnorderedAccess;
+    if ( view & TextureViewShaderResource )
+        return ResourceState::GeneralRead;
+
+    return ResourceState::Common;
+};
 
 } // namespace DX12Translator
 } // namespace Graphics::RHI

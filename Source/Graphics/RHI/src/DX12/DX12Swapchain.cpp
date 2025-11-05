@@ -113,13 +113,13 @@ DX12Swapchain::~DX12Swapchain() {
 void DX12Swapchain::updateImages() {
 
     _swapImages.resize( _desc.imageCount );
-    TextureDesc           desc = { .viewFlags = TextureViewRenderTarget };
-    DX12Device::Resources res  = { .heapRTV = _heapRTV };
+    TextureDesc         desc = { .viewFlags = TextureViewRenderTarget };
+    DX12Device::Context ctx  = { .device = _device, .heapRTV = _heapRTV };
     for ( uint i = 0; i < _desc.imageCount; ++i )
     {
         ComPtr<ID3D12Resource> backBuffer;
         DX_CHECK( _swapchain->GetBuffer( i, IID_PPV_ARGS( &backBuffer ) ) );
-        std::shared_ptr<DX12Texture> backBufferTexture = NEW_S( DX12Texture )( _device, backBuffer, desc, false, res );
+        std::shared_ptr<DX12Texture> backBufferTexture = NEW_S( DX12Texture )( backBuffer, desc, ctx, false );
         backBufferTexture->stateTracker().setState( ResourceState::Present );
 
         _swapImages[i] = backBufferTexture;
