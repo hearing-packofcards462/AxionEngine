@@ -519,6 +519,10 @@ protected:
     virtual ~IResource() = default;
 
 public:
+    virtual ulong addRef()      = 0;
+    virtual ulong release()     = 0;
+    virtual ulong getRefCount() = 0;
+
     // Returns a native object or interface, for example ID3D12Device*, or nullptr if the requested interface is unavailable.
     // Does *not* AddRef the returned interface.
     virtual NativeObject getNativeObject( ObjectType objectType ) {
@@ -536,6 +540,124 @@ public:
     IResource& operator=( const IResource& )  = delete;
     IResource& operator=( const IResource&& ) = delete;
 };
+
+template <class T>
+class RefCounted : public T
+{
+public:
+    RefCounted()
+        : _refCount( 1 ) {}
+
+    void addRef() override {
+        _refCount.fetch_add( 1, std::memory_order_relaxed );
+    }
+
+    void release() override {
+        if ( _refCount.fetch_sub( 1, std::memory_order_acq_rel ) == 1 )
+            delete this;
+    }
+
+    unsigned long getRefCount() const override {
+        return _refCount.load( std::memory_order_relaxed );
+    }
+
+private:
+    std::atomic<unsigned long> _refCount;
+};
+
+//
+// RefPtr smart pointer
+//
+template <class T>
+class Ptr
+{
+public:
+    Ptr()
+        : ptr( nullptr ) {}
+    Ptr( std::nullptr_t )
+        : ptr( nullptr ) {}
+
+    Ptr( T* raw )
+        : ptr( raw ) {
+        internalAddRef();
+    }
+
+    Ptr( const Ptr& other )
+        : ptr( other.ptr ) {
+        internalAddRef();
+    }
+
+    Ptr( Ptr&& other ) noexcept
+        : ptr( other.ptr ) {
+        other.ptr = nullptr;
+    }
+
+    ~Ptr() {
+        internalRelease();
+    }
+
+    Ptr& operator=( const Ptr& other ) {
+        if ( this != &other )
+        {
+            internalRelease();
+            ptr = other.ptr;
+            internalAddRef();
+        }
+        return *this;
+    }
+
+    Ptr& operator=( Ptr&& other ) noexcept {
+        if ( this != &other )
+        {
+            internalRelease();
+            ptr       = other.ptr;
+            other.ptr = nullptr;
+        }
+        return *this;
+    }
+
+    // Operators
+    T* operator->() const { return ptr; }
+    T& operator*() const { return *ptr; }
+       operator bool() const { return ptr != nullptr; }
+       operator T*() const { return ptr; }
+
+    T* Get() const { return ptr; }
+
+    T** operator&() {
+        // BE CAREFUL: this clears pointer first (just like COM)
+        internalRelease();
+        ptr = nullptr;
+        return &ptr;
+    }
+
+    T* detach() {
+        T* tmp = ptr;
+        ptr    = nullptr;
+        return tmp;
+    }
+
+    void attach( T* raw ) {
+        internalRelease();
+        ptr = raw;
+    }
+
+private:
+    void internalAddRef() {
+        if ( ptr )
+            ptr->addRef();
+    }
+
+    void internalRelease() {
+        if ( ptr )
+            ptr->release();
+        ptr = nullptr;
+    }
+
+private:
+    T* ptr;
+};
+
 } // namespace RHI
 } // namespace Graphics
 AXION_NAMESPACE_END
