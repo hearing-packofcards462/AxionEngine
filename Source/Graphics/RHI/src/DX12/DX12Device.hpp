@@ -7,7 +7,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-class DX12Device final : public IDX12Device
+class DX12Device final : public RefCounter<IDX12Device>
 {
 
 public:
@@ -19,7 +19,7 @@ public:
     TextureHandle     createTexture( const TextureDesc& desc, const void* initialData = nullptr ) override;
     BufferHandle      createBuffer( const BufferDesc& desc, const void* initialData = nullptr ) override;
 
-    void executeCommandLists( const std::vector<CommandListHandle>& lists, QueueType workingQueue, Fence& frameFence ) override;
+    void executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) override;
     void waitForFrame( const Fence& frameFence, QueueType workingQueue ) override;
     void waitForQueue( QueueType workingQueue, QueueType dstQueue ) override;
     void queueWaitIdle( QueueType workingQueue, Fence& frameFence ) override;

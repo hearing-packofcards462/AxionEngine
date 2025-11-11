@@ -6,7 +6,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( ISwapchain, Swapchain )
+DEFINE_COM_HANDLE_FOR_TYPE( ISwapchain, Swapchain )
 
 /**
  * @brief Interface representing a generic rendering swapchain.

@@ -112,16 +112,20 @@ DX12Swapchain::~DX12Swapchain() {
 }
 void DX12Swapchain::updateImages() {
 
-    _swapImages.resize( _desc.imageCount );
+    _swapImages.resize( _desc.imageCount, nullptr );
     TextureDesc         desc = { .viewFlags = TextureViewRenderTarget };
     DX12Device::Context ctx  = { .device = _device, .heapRTV = _heapRTV };
     for ( uint i = 0; i < _desc.imageCount; ++i )
     {
         ComPtr<ID3D12Resource> backBuffer;
         DX_CHECK( _swapchain->GetBuffer( i, IID_PPV_ARGS( &backBuffer ) ) );
-        std::shared_ptr<DX12Texture> backBufferTexture = NEW_S( DX12Texture )( backBuffer, desc, ctx, false );
-        backBufferTexture->stateTracker().setState( ResourceState::Present );
 
+        DX12Texture* rawBackBufferTexture = new DX12Texture( backBuffer, desc, ctx, false );
+        rawBackBufferTexture->stateTracker().setState( ResourceState::Present );
+        TextureHandle backBufferTexture;
+        backBufferTexture.attach( rawBackBufferTexture );
+        // Assign to vector (old element will be released automatically)
+        // _swapImages[i] = std::move( backBufferTexture );
         _swapImages[i] = backBufferTexture;
     }
 } // namespace RHI

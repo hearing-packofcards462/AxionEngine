@@ -21,6 +21,10 @@ DX12CommandList::DX12CommandList( const ComPtr<ID3D12Device2>& device, const Com
     DX_CHECK( _cmdList->Close() );
 }
 
+DX12CommandList::~DX12CommandList() {
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Command List destroyed" );
+}
+
 void DX12CommandList::begin() {
     auto& allocator = _cmdAllocators[_currentFrame];
     DX_CHECK( allocator->Reset() );

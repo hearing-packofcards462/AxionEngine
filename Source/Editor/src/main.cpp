@@ -1,7 +1,7 @@
 #pragma once
 #include "Axion/Common/Defines.h"
-#include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/Platforms/GLFW.h"
+#include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/Renderer.h"
 
 USING_AXION_NAMESPACE
@@ -49,14 +49,13 @@ int main( /*int argc, char* argv[]*/ ) {
             rnd->render();
         };
 
-#ifdef AXION_DEBUG
-        Axion::Logger::shutdown();
-#endif
-
     } catch ( const std::exception& e )
     {
         return EXIT_FAILURE;
     }
+#ifdef AXION_DEBUG
+    Axion::Logger::shutdown();
+#endif
 
     return EXIT_SUCCESS;
 }

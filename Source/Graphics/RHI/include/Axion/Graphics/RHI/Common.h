@@ -519,9 +519,15 @@ protected:
     virtual ~IResource() = default;
 
 public:
-    virtual ulong addRef()      = 0;
-    virtual ulong release()     = 0;
-    virtual ulong getRefCount() = 0;
+    // Intrusive ref count API
+    virtual ulong addRef() noexcept = 0;
+    virtual ulong release() noexcept = 0;
+    virtual ulong getRefCount() const noexcept = 0;
+
+    // Debug utilities (optional but very useful for graphics engines)
+    virtual void               setDebugName( const std::string& name ) = 0;
+    virtual const std::string& getDebugName() const                    = 0;
+    virtual std::string        toString() const                        = 0;
 
     // Returns a native object or interface, for example ID3D12Device*, or nullptr if the requested interface is unavailable.
     // Does *not* AddRef the returned interface.
@@ -529,134 +535,171 @@ public:
         (void)objectType;
         return nullptr;
     }
-    // Sets name for debugging purposes
-    virtual void               setDebugName( const std::string& name ) = 0;
-    virtual const std::string& getDebugName() const                    = 0;
-    virtual std::string        toString() const                        = 0;
 
-    // Non-copyable and non-movable
-    IResource( const IResource& )             = delete;
-    IResource( const IResource&& )            = delete;
-    IResource& operator=( const IResource& )  = delete;
-    IResource& operator=( const IResource&& ) = delete;
+    // Non-copyable, non-movable
+    IResource( const IResource& )            = delete;
+    IResource& operator=( const IResource& ) = delete;
+    IResource( IResource&& )                 = delete;
+    IResource& operator=( IResource&& )      = delete;
 };
 
+// Template to add reference counting to any base
 template <class T>
-class RefCounted : public T
+class RefCounter : public T
 {
 public:
-    RefCounted()
-        : _refCount( 1 ) {}
-
-    void addRef() override {
-        _refCount.fetch_add( 1, std::memory_order_relaxed );
+    RefCounter() : _refCount(1) {
+        // std::cout << "[RefCounter] Created: " << this << " RefCount=1\n";
     }
 
-    void release() override {
-        if ( _refCount.fetch_sub( 1, std::memory_order_acq_rel ) == 1 )
+    virtual ~RefCounter() {
+        // std::cout << "[RefCounter] Destroyed: " << this << "\n";
+    }
+
+    ulong addRef() noexcept override
+    {
+        ulong val = ++_refCount;
+        // std::cout << "[RefCounter] addRef: " << this << " RefCount=" << val << "\n";
+        return val;
+    }
+
+    ulong release() noexcept override
+    {
+        ulong val = --_refCount;
+        // std::cout << "[RefCounter] release: " << this << " RefCount=" << val << "\n";
+        if (val == 0)
+        {
+            // std::cout << "[RefCounter] deleting: " << this << "\n";
             delete this;
+        }
+        return val;
     }
 
-    unsigned long getRefCount() const override {
-        return _refCount.load( std::memory_order_relaxed );
+    ulong getRefCount() const noexcept override
+    {
+        return _refCount.load();
     }
 
 private:
-    std::atomic<unsigned long> _refCount;
+    std::atomic<ulong> _refCount;
 };
 
-//
-// RefPtr smart pointer
-//
+// COM-style smart pointer
 template <class T>
 class Ptr
 {
 public:
-    Ptr()
-        : ptr( nullptr ) {}
-    Ptr( std::nullptr_t )
-        : ptr( nullptr ) {}
+    Ptr() : _ptr(nullptr) {}
+    Ptr(std::nullptr_t) : _ptr(nullptr) {}
 
-    Ptr( T* raw )
-        : ptr( raw ) {
+    Ptr(T* raw) : _ptr(raw)
+    {
         internalAddRef();
     }
 
-    Ptr( const Ptr& other )
-        : ptr( other.ptr ) {
+    Ptr(const Ptr& other) : _ptr(other._ptr)
+    {
         internalAddRef();
     }
 
-    Ptr( Ptr&& other ) noexcept
-        : ptr( other.ptr ) {
-        other.ptr = nullptr;
+    Ptr(Ptr&& other) noexcept : _ptr(other._ptr)
+    {
+        other._ptr = nullptr;
     }
 
-    ~Ptr() {
+    template <typename U, typename = std::enable_if_t<std::is_convertible<U*, T*>::value>>
+    Ptr(const Ptr<U>& other) : _ptr(other._ptr)
+    {
+        internalAddRef();
+    }
+
+    template <typename U, typename = std::enable_if_t<std::is_convertible<U*, T*>::value>>
+    Ptr(Ptr<U>&& other) noexcept : _ptr(other._ptr)
+    {
+        other._ptr = nullptr;
+    }
+
+    ~Ptr()
+    {
         internalRelease();
     }
 
-    Ptr& operator=( const Ptr& other ) {
-        if ( this != &other )
+    Ptr& operator=(const Ptr& other)
+    {
+        if (this != &other)
         {
             internalRelease();
-            ptr = other.ptr;
+            _ptr = other._ptr;
             internalAddRef();
         }
         return *this;
     }
 
-    Ptr& operator=( Ptr&& other ) noexcept {
-        if ( this != &other )
-        {
-            internalRelease();
-            ptr       = other.ptr;
-            other.ptr = nullptr;
-        }
-        return *this;
-    }
+    // operators
+    T* operator->() const { return _ptr; }
+    T& operator*() const { return *_ptr; }
+    operator bool() const { return _ptr != nullptr; }
+    operator T*() const { return _ptr; }
 
-    // Operators
-    T* operator->() const { return ptr; }
-    T& operator*() const { return *ptr; }
-       operator bool() const { return ptr != nullptr; }
-       operator T*() const { return ptr; }
+    T* get() const { return _ptr; }
 
-    T* Get() const { return ptr; }
-
-    T** operator&() {
-        // BE CAREFUL: this clears pointer first (just like COM)
+    // Returns a pointer to the internal pointer (like COM & operator)
+    T** operator&()
+    {
         internalRelease();
-        ptr = nullptr;
-        return &ptr;
+        _ptr = nullptr;
+        return &_ptr;
     }
 
-    T* detach() {
-        T* tmp = ptr;
-        ptr    = nullptr;
+    // Detach the pointer (caller takes ownership, RefPtr forgets it)
+    T* detach()
+    {
+        T* tmp = _ptr;
+        _ptr = nullptr;
         return tmp;
     }
 
-    void attach( T* raw ) {
+    // Attach a raw pointer (takes ownership)
+    void attach(T* raw)
+    {
         internalRelease();
-        ptr = raw;
+        _ptr = raw;
+    }
+
+    // Factory method, returns Ptr that owns new object
+    template <class... Args>
+    static Ptr<T> create(Args&&... args)
+    {
+        T* obj = new T(std::forward<Args>(args)...);
+        return Ptr<T>(obj);
     }
 
 private:
-    void internalAddRef() {
-        if ( ptr )
-            ptr->addRef();
+    void internalAddRef()
+    {
+        if (_ptr)
+            _ptr->addRef();
     }
 
-    void internalRelease() {
-        if ( ptr )
-            ptr->release();
-        ptr = nullptr;
+    void internalRelease()
+    {
+        if (_ptr)
+            _ptr->release();
+        _ptr = nullptr;
     }
 
 private:
-    T* ptr;
+    T* _ptr;
+
+    template <typename>
+    friend class Ptr;
 };
+
+#define DEFINE_COM_HANDLE_FOR_TYPE( type, clean ) \
+    class type;                               \
+    typedef Ptr<type> clean##Handle;
+
+
 
 } // namespace RHI
 } // namespace Graphics

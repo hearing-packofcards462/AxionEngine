@@ -6,12 +6,12 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( DX12CommandList, DX12CommandList )
+DEFINE_COM_HANDLE_FOR_TYPE( DX12CommandList, DX12CommandList )
 
-class DX12CommandList : public ICommandList
+class DX12CommandList : public RefCounter<ICommandList>
 {
 public:
-    ~DX12CommandList() override {};
+    ~DX12CommandList() override;
 
     void                   begin() override;
     void                   end() override;

@@ -5,7 +5,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( IDX12Device, DX12Device )
+DEFINE_COM_HANDLE_FOR_TYPE( IDX12Device, DX12Device )
 
 class IDX12Device : public IDevice
 {

@@ -72,6 +72,7 @@ DX12Texture::DX12Texture( const ComPtr<ID3D12Resource>& resource,
 }
 
 DX12Texture::~DX12Texture() {
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Texture destroyed" );
 }
 
 const TextureDesc& DX12Texture::getDescription() const {
@@ -145,9 +146,9 @@ void DX12Texture::uploadInitialData( DX12Device::Context& ctx, const void* initi
 
         // Copy buffer -> texture
         D3D12_TEXTURE_COPY_LOCATION dstLoc {};
-        dstLoc.pResource        = _resource.Get();
-        dstLoc.Type             = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-        dstLoc.SubresourceIndex = 0;
+        dstLoc.pResource            = _resource.Get();
+        dstLoc.Type                 = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+        dstLoc.SubresourceIndex     = 0;
         D3D12_RESOURCE_DESC dstDesc = _resource->GetDesc();
 
         D3D12_TEXTURE_COPY_LOCATION srcLoc {};

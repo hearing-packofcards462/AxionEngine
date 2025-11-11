@@ -5,7 +5,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( ITexture, Texture )
+DEFINE_COM_HANDLE_FOR_TYPE( ITexture, Texture )
 
 // Texture are always GPU. If you waNT TO wark with CPU ones, use a buffer.
 class ITexture : public IResource
@@ -27,7 +27,7 @@ public:
 
 typedef ITexture::Description TextureDesc;
 
-DEFINE_HANDLE_FOR_TYPE( IBuffer, Buffer )
+DEFINE_COM_HANDLE_FOR_TYPE( IBuffer, Buffer )
 
 class IBuffer : public IResource
 {
@@ -53,7 +53,7 @@ public:
 
 using BufferDesc = IBuffer::Description;
 
-DEFINE_HANDLE_FOR_TYPE( IAccel, Accel )
+DEFINE_COM_HANDLE_FOR_TYPE( IAccel, Accel )
 
 class IAccel : public IResource
 {

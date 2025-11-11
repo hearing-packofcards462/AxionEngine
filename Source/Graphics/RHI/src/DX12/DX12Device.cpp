@@ -10,7 +10,9 @@ AXION_NAMESPACE_BEGIN
 namespace Graphics::RHI {
 
 DX12DeviceHandle RHI::createDX12Device( const DX12DeviceDesc& desc ) {
-    auto dev = NEW_S( DX12Device )( desc );
+    DX12Device*      raw = new DX12Device( desc );
+    DX12DeviceHandle dev;
+    dev.attach( raw );
     AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
     return dev;
 }
@@ -39,8 +41,7 @@ DX12Device::DX12Device( const IDX12Device::Description& desc ) {
         _ctx.heapRTV.init( _ctx.device, DX12DescriptorHeap::Type::RTV, desc.renderTargetViewHeapSize );
         _ctx.heapDSV.init( _ctx.device, DX12DescriptorHeap::Type::DSV, desc.depthStencilViewHeapSize );
 
-        _ctx.uploadContext.init(_ctx.device);
-        
+        _ctx.uploadContext.init( _ctx.device );
     }
 
     _initialized = true;
@@ -68,27 +69,36 @@ SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const S
             AXION_LOG_ERROR( Logger::Module::RHI, "Unsupported platform for swapchain" );
             throw AxionException( "Unsupported platform for swapchain" );
     }
-    auto swp = NEW_S( DX12Swapchain )( hwnd, _ctx, desc );
+    DX12Swapchain*  raw = new DX12Swapchain( hwnd, _ctx, desc );
+    SwapchainHandle swp;
+    swp.attach( raw );
+    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
     AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Swapchain Created Successfully" );
     return swp;
 }
 
 CommandListHandle DX12Device::createCommandList( const CommandListDesc& desc ) {
-    return NEW_S( DX12CommandList )( _ctx.device, desc );
+    DX12CommandList*  raw = new DX12CommandList( _ctx.device, desc );
+    CommandListHandle cmd;
+    cmd.attach( raw );
+    return cmd;
 }
 
 TextureHandle DX12Device::createTexture( const TextureDesc& desc, const void* initialData ) {
-    return NEW_S( DX12Texture )( desc, _ctx, initialData );
+    DX12Texture*  raw = new DX12Texture( desc, _ctx, initialData );
+    TextureHandle tex;
+    tex.attach( raw );
+    return tex;
 }
 
 BufferHandle RHI::DX12Device::createBuffer( const BufferDesc& desc, const void* initialData ) {
     return nullptr;
 }
 
-void DX12Device::executeCommandLists( const std::vector<CommandListHandle>& lists, QueueType workingQueue, Fence& frameFence ) {
+void DX12Device::executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) {
     std::vector<ID3D12CommandList*> nativeLists;
     nativeLists.reserve( lists.size() );
-    for ( CommandListHandle list : lists )
+    for ( ICommandList* list : lists )
     {
         ID3D12CommandList* nativeList = list->getNativeObject( ObjectTypes::DX12_CommandList );
         nativeLists.push_back( nativeList );

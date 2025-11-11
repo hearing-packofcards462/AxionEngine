@@ -8,7 +8,7 @@ namespace Graphics {
 /**
  * @brief Handle definition for GLFW-specific window implementation.
  */
-DEFINE_HANDLE_FOR_TYPE( IGLFWWindow, GLFWWindow )
+DEFINE_SHARED_HANDLE_FOR_TYPE( IGLFWWindow, GLFWWindow )
 
 /**
  * @brief Interface for a GLFW window implementation.

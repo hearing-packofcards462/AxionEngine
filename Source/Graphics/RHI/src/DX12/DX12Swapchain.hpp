@@ -10,9 +10,9 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( DX12Swapchain, DX12Swapchain )
+DEFINE_COM_HANDLE_FOR_TYPE( DX12Swapchain, DX12Swapchain )
 
-class DX12Swapchain final : public ISwapchain
+class DX12Swapchain final : public RefCounter<ISwapchain>
 {
 public:
     ~DX12Swapchain() override;

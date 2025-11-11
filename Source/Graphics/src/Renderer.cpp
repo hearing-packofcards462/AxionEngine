@@ -36,11 +36,12 @@ Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
     }
 
     AXION_LOG_ASSERT( _wnd, Logger::Module::GFX, "Window is NULL | Renderer needs Window. If no window needed, use Headless Renderer" );
-    _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
+    _swapchain = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
+    // _swapchain      = nullptr;
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
 
     _commandList = _device->createCommandList( { .queueType = RHI::QueueType::Graphics, .numFrames = _FRAMES_IN_FLIGHT } );
-#ifdef RAIKO_DEBUG
+#ifdef AXION_DEBUG
     _commandList->setDebugName( "Graphics Command List" );
 #endif
 
@@ -87,7 +88,7 @@ void Renderer::render() {
     _commandList->end();
 
     // Submit + signal
-    _device->executeCommandLists( { _commandList },
+    _device->executeCommandLists( { _commandList.get() },
                                   RHI::QueueType::Graphics,
                                   _frameFences[_currentFrame] );
 
@@ -114,6 +115,7 @@ void Renderer::render( const GPUSceneView& gpuScene ) {
 
 void Renderer::destroy() {
     _device->queueWaitIdle( RHI::QueueType::Graphics, _frameFences[_currentFrame] );
+
     AXION_LOG_INFO( Logger::Module::GFX, "Destroying Renderer" );
 }
 bool Renderer::isHeadless() {

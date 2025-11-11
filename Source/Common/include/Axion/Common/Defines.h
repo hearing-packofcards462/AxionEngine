@@ -32,16 +32,6 @@
 #define AXION_NAMESPACE_END }
 #define USING_AXION_NAMESPACE using namespace Axion;
 
-#define DEFINE_HANDLE_FOR_TYPE( type, clean ) \
-    class type;                               \
-    typedef std::shared_ptr<type> clean##Handle;
-
-#define NEW_S( type ) \
-    std::make_shared<type>
-
-#define NEW_U( type ) \
-    std::make_unique<type>
-
 #if defined( _DEBUG ) || !defined( NDEBUG )
 #define AXION_DEBUG
 #endif
@@ -53,6 +43,20 @@
     inline bool operator!( T a ) { return uint32_t( a ) == 0; }                                                               \
     inline bool operator==( T a, uint32_t b ) { return uint32_t( a ) == b; }                                                  \
     inline bool operator!=( T a, uint32_t b ) { return uint32_t( a ) != b; }
+
+#define DEFINE_SHARED_HANDLE_FOR_TYPE( type, clean ) \
+    class type;                                      \
+    typedef std::shared_ptr<type> clean##Handle;
+
+#define NEW_S( type ) \
+    std::make_shared<type>
+
+#define DEFINE_UNIQUE_HANDLE_FOR_TYPE( type, clean ) \
+    class type;                                      \
+    typedef std::unique_ptr<type> clean##Handle;
+
+#define NEW_U( type ) \
+    std::make_unique<type>
 
 // ---------------------------------------------------------------------------
 // Handle Data Definitions

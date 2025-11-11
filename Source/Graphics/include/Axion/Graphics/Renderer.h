@@ -7,7 +7,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-DEFINE_HANDLE_FOR_TYPE( IRenderer, Renderer )
+DEFINE_SHARED_HANDLE_FOR_TYPE( IRenderer, Renderer )
 
 class IRenderer
 {

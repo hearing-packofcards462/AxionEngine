@@ -8,7 +8,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( IDevice, Device )
+DEFINE_COM_HANDLE_FOR_TYPE( IDevice, Device )
 
 struct Fence {
     ulong value = 0;
@@ -23,7 +23,7 @@ public:
     virtual TextureHandle     createTexture( const TextureDesc& desc, const void* initialData = nullptr )   = 0;
     virtual BufferHandle      createBuffer( const BufferDesc& desc, const void* initialData = nullptr )     = 0;
 
-    virtual void executeCommandLists( const std::vector<CommandListHandle>& lists, QueueType workingQueue, Fence& frameFence ) = 0;
+    virtual void executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) = 0;
     virtual void waitForFrame( const Fence& frameFence, QueueType workingQueue )                                               = 0;
     virtual void waitForQueue( QueueType workingQueue, QueueType dstQueue )                                                    = 0;
     virtual void queueWaitIdle( QueueType workingQueue, Fence& frameFence )                                                    = 0;

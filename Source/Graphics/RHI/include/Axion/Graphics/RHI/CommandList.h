@@ -7,7 +7,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_HANDLE_FOR_TYPE( ICommandList, CommandList )
+DEFINE_COM_HANDLE_FOR_TYPE( ICommandList, CommandList )
 
 class ICommandList : public IResource
 {
