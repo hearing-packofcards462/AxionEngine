@@ -345,6 +345,143 @@ constexpr D3D12_RESOURCE_STATES get( ResourceState s ) {
     return dx;
 };
 
+constexpr D3D12_FILL_MODE get( FillMode mode ) noexcept {
+    switch ( mode )
+    {
+        case FillMode::Wireframe:
+            return D3D12_FILL_MODE_WIREFRAME;
+        case FillMode::Solid:
+        default:
+            return D3D12_FILL_MODE_SOLID;
+    }
+}
+
+constexpr D3D12_CULL_MODE get( CullMode mode ) noexcept {
+    switch ( mode )
+    {
+        case CullMode::Front:
+            return D3D12_CULL_MODE_FRONT;
+        case CullMode::Back:
+            return D3D12_CULL_MODE_BACK;
+        case CullMode::None:
+        default:
+            return D3D12_CULL_MODE_NONE;
+    }
+}
+constexpr D3D12_COMPARISON_FUNC get( CompareOp op ) noexcept {
+    switch ( op )
+    {
+        case CompareOp::Never:
+            return D3D12_COMPARISON_FUNC_NEVER;
+        case CompareOp::Less:
+            return D3D12_COMPARISON_FUNC_LESS;
+        case CompareOp::Equal:
+            return D3D12_COMPARISON_FUNC_EQUAL;
+        case CompareOp::LessEqual:
+            return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        case CompareOp::Greater:
+            return D3D12_COMPARISON_FUNC_GREATER;
+        case CompareOp::NotEqual:
+            return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+        case CompareOp::GreaterEqual:
+            return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+        case CompareOp::Always:
+        default:
+            return D3D12_COMPARISON_FUNC_ALWAYS;
+    }
+}
+constexpr D3D12_BLEND get( BlendFactor factor ) noexcept {
+    switch ( factor )
+    {
+        case BlendFactor::Zero:
+            return D3D12_BLEND_ZERO;
+        case BlendFactor::One:
+            return D3D12_BLEND_ONE;
+        case BlendFactor::SrcColor:
+            return D3D12_BLEND_SRC_COLOR;
+        case BlendFactor::OneMinusSrcColor:
+            return D3D12_BLEND_INV_SRC_COLOR;
+        case BlendFactor::DstColor:
+            return D3D12_BLEND_DEST_COLOR;
+        case BlendFactor::OneMinusDstColor:
+            return D3D12_BLEND_INV_DEST_COLOR;
+        case BlendFactor::SrcAlpha:
+            return D3D12_BLEND_SRC_ALPHA;
+        case BlendFactor::OneMinusSrcAlpha:
+            return D3D12_BLEND_INV_SRC_ALPHA;
+        case BlendFactor::DstAlpha:
+            return D3D12_BLEND_DEST_ALPHA;
+        case BlendFactor::OneMinusDstAlpha:
+            return D3D12_BLEND_INV_DEST_ALPHA;
+        case BlendFactor::ConstantColor:
+            return D3D12_BLEND_BLEND_FACTOR;
+        case BlendFactor::OneMinusConstantColor:
+            return D3D12_BLEND_INV_BLEND_FACTOR;
+        case BlendFactor::ConstantAlpha:
+            return D3D12_BLEND_BLEND_FACTOR;
+        case BlendFactor::OneMinusConstantAlpha:
+            return D3D12_BLEND_INV_BLEND_FACTOR;
+        case BlendFactor::SrcAlphaSaturate:
+            return D3D12_BLEND_SRC_ALPHA_SAT;
+        default:
+            return D3D12_BLEND_ONE;
+    }
+}
+constexpr D3D12_BLEND_OP get( BlendOp op ) noexcept {
+    switch ( op )
+    {
+        case BlendOp::Add:
+            return D3D12_BLEND_OP_ADD;
+        case BlendOp::Subtract:
+            return D3D12_BLEND_OP_SUBTRACT;
+        case BlendOp::ReverseSubtract:
+            return D3D12_BLEND_OP_REV_SUBTRACT;
+        case BlendOp::Min:
+            return D3D12_BLEND_OP_MIN;
+        case BlendOp::Max:
+            return D3D12_BLEND_OP_MAX;
+        default:
+            return D3D12_BLEND_OP_ADD;
+    }
+}
+constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE get( PrimitiveTopology topology ) noexcept {
+    switch ( topology )
+    {
+        case PrimitiveTopology::PointList:
+            return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+        case PrimitiveTopology::LineList:
+        case PrimitiveTopology::LineStrip:
+            return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+        case PrimitiveTopology::TriangleList:
+        case PrimitiveTopology::TriangleStrip:
+        case PrimitiveTopology::TriangleFan:
+            return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        case PrimitiveTopology::PatchList:
+            return D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
+        default:
+            return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
+    }
+}
+
+// Full D3D12_PRIMITIVE_TOPOLOGY (needed when calling IASetPrimitiveTopology)
+constexpr D3D12_PRIMITIVE_TOPOLOGY getFullTopology( PrimitiveTopology topology ) noexcept {
+    switch ( topology )
+    {
+        case PrimitiveTopology::PointList:
+            return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+        case PrimitiveTopology::LineList:
+            return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+        case PrimitiveTopology::LineStrip:
+            return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+        case PrimitiveTopology::TriangleList:
+            return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        case PrimitiveTopology::TriangleStrip:
+            return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        default:
+            return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    }
+}
+
 constexpr CD3DX12_HEAP_PROPERTIES getHeapProps( MemoryUsage mem ) {
     switch ( mem )
     {

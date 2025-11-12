@@ -36,38 +36,9 @@ Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
     }
 
     AXION_LOG_ASSERT( _wnd, Logger::Module::GFX, "Window is NULL | Renderer needs Window. If no window needed, use Headless Renderer" );
-    _swapchain = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
-    // _swapchain      = nullptr;
+    _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
-
-    _commandList = _device->createCommandList( { .queueType = RHI::QueueType::Graphics, .numFrames = _FRAMES_IN_FLIGHT } );
-#ifdef AXION_DEBUG
-    _commandList->setDebugName( "Graphics Command List" );
-#endif
-
-    // // Texture description
-    // RHI::TextureDesc desc {};
-    // desc.size      = { 2, 2, 1 }; // 2x2 texture
-    // desc.mipLevels = 1;
-    // desc.arraySize = 1;
-    // desc.dimension = TextureDimension::Texture2D;
-    // desc.format    = Format::RGBA8_UINT;        // RGBA8 uint
-    // desc.viewFlags = TextureViewShaderResource; // For SRV
-
-    // // Initial data: RGBA8 uint (4 bytes per pixel), red color
-    // uint8_t initialData[2 * 2 * 4] = {
-    //     255, 0, 0, 255, 255, 0, 0, 255, // row 0
-    //     255,
-    //     0,
-    //     0,
-    //     255,
-    //     255,
-    //     0,
-    //     0,
-    //     255 // row 1
-    // };
-
-    // auto tex = _device->createTexture( desc, initialData );
+    _commandList    = _device->createCommandList( { .queueType = RHI::QueueType::Graphics, .numFrames = _FRAMES_IN_FLIGHT, .debugName = "Graphics Command List" } );
 }
 
 Renderer::~Renderer() {

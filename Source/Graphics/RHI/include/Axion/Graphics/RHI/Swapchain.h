@@ -29,6 +29,7 @@ public:
         uint        imageCount;                   ///< Number of backbuffers/images.
         PresentMode presentMode;                  ///< Presentation mode (e.g., immediate, vsync, mailbox, etc.).
         bool        tearingSupported = false;     ///< Whether tearing is supported on this platform.
+        std::string debugName        = "Swapchain";
     };
 
     virtual ~ISwapchain() = default;

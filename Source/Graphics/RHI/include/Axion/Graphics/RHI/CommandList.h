@@ -13,8 +13,9 @@ class ICommandList : public IResource
 {
 public:
     struct Description {
-        QueueType queueType;
-        uint      numFrames = 1;
+        QueueType   queueType;
+        uint        numFrames = 1;
+        std::string debugName = "";
     };
 
     virtual ~ICommandList() = default;

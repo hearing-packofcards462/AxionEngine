@@ -32,6 +32,6 @@ add_subdirectory(ThirdParty)
 
 add_subdirectory(Source/Common)
 add_subdirectory(Source/Graphics)
-# add_subdirectory(Source/EngineCore)
+add_subdirectory(Source/EngineCore)
 add_subdirectory(Source/Editor)
 

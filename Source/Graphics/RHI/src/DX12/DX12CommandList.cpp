@@ -22,7 +22,7 @@ DX12CommandList::DX12CommandList( const ComPtr<ID3D12Device2>& device, const Com
 }
 
 DX12CommandList::~DX12CommandList() {
-    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Command List destroyed" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Command List [{}]", _desc.debugName );
 }
 
 void DX12CommandList::begin() {
@@ -144,7 +144,7 @@ NativeObject DX12CommandList::getNativeObject( ObjectType objectType ) {
 }
 
 void DX12CommandList::setDebugName( const std::string& name ) {
-    _name = name;
+    _desc.debugName = name;
     _cmdList->SetName( std::wstring( name.begin(), name.end() ).c_str() );
     for ( size_t i = 0; i < _cmdAllocators.size(); i++ )
     {
@@ -154,7 +154,7 @@ void DX12CommandList::setDebugName( const std::string& name ) {
 }
 
 const std::string& DX12CommandList::getDebugName() const {
-    return _name;
+    return _desc.debugName;
 }
 
 std::string RHI::DX12CommandList::toString() const {

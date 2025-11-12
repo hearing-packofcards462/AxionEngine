@@ -44,8 +44,6 @@ private:
     DX12DescriptorHeap         _heapRTV;
     std::vector<TextureHandle> _swapImages;
 
-    std::string _name;
-
     bool _initialized = false;
 };
 

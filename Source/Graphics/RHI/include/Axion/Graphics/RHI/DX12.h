@@ -31,7 +31,7 @@ public:
         FeatureLevel featureLevel               = FeatureLevel::_12_1;
         bool         enableDebugLayer           = true;
         bool         useWarp                    = false;
-        std::string  debugName                  = "DX12 Device";
+        std::string  debugName                  = "Device";
         uint         renderTargetViewHeapSize   = 1024;
         uint         depthStencilViewHeapSize   = 1024;
         uint         shaderResourceViewHeapSize = 16384;

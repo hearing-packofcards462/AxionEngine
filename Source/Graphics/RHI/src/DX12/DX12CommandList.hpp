@@ -36,8 +36,6 @@ private:
 
     uint            _currentFrame = 0;
     CommandListDesc _desc;
-
-    std::string _name;
 };
 
 } // namespace Graphics::RHI

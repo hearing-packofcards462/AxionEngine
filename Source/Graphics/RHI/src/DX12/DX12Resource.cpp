@@ -72,7 +72,7 @@ DX12Texture::DX12Texture( const ComPtr<ID3D12Resource>& resource,
 }
 
 DX12Texture::~DX12Texture() {
-    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Texture destroyed" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Texture [{}]", _desc.debugName );
 }
 
 const TextureDesc& DX12Texture::getDescription() const {
@@ -113,17 +113,46 @@ void DX12Texture::createViews( DX12Device::Context& ctx, bool useDescriptionPara
 
 void DX12Texture::uploadInitialData( DX12Device::Context& ctx, const void* initialData ) {
 
-    size_t     bufferSize = _desc.size.width * _desc.size.height * _desc.size.depth * getFormatBytes( _desc.format );
+    size_t bufferSize = _desc.size.width * _desc.size.height * _desc.size.depth * getFormatBytes( _desc.format );
+    // Calculate required footprint size
+    D3D12_RESOURCE_DESC texDesc = _resource->GetDesc();
+
+    UINT64                             totalBytes = 0;
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+    UINT                               numRows;
+    UINT64                             rowSizeInBytes;
+
+    ctx.device->GetCopyableFootprints(
+        &texDesc,
+        0,
+        1,
+        0,
+        &footprint,
+        &numRows,
+        &rowSizeInBytes,
+        &totalBytes );
+
+    // totalBytes now includes 256-byte row alignment requirement
+
     DX12Buffer staging(
         DX12Buffer::Description {
-            .size       = bufferSize,
+            .size       = totalBytes, // ✅ Use padded size
             .memoryType = MemoryUsage::CPUVisible,
             .viewFlags  = BufferViewNone },
         ctx );
 
-    // Map + copy data into staging
-    void* mapped = staging.map();
-    std::memcpy( mapped, initialData, bufferSize );
+    // Copy initial data into padded upload memory
+    uchar*       mapped      = (uchar*)staging.map();
+    size_t       pixelStride = getFormatBytes( _desc.format );
+    const uchar* src         = (const uchar*)initialData;
+
+    for ( uint row = 0; row < numRows; ++row )
+    {
+        memcpy(
+            mapped + row * footprint.Footprint.RowPitch,
+            src + row * _desc.size.width * pixelStride,
+            _desc.size.width * pixelStride );
+    }
     staging.unmap();
 
     ResourceState firstUseState = _stateTracker.getCurrentState();

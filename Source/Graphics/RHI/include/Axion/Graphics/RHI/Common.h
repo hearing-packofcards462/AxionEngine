@@ -55,7 +55,7 @@ enum class BufferingType : uint
     Triple = 3,
 };
 
-enum class Format : uint8_t
+enum class Format : uchar
 {
     UNKNOWN,
 
@@ -259,7 +259,7 @@ constexpr size_t getFormatBytes( Format format ) {
     }
 }
 
-enum class TextureDimension : uint8_t
+enum class TextureDimension : uchar
 {
     Unknown,
     Texture1D,
@@ -448,6 +448,123 @@ enum class FormatSupport : uint
 
 AXION_ENUM_CLASS_FLAG_OPERATORS( FormatSupport )
 
+// Shader type mask. The values match ones used in Vulkan.
+enum class ShaderType : ushort
+{
+    None = 0x0000,
+
+    Compute = 0x0020,
+
+    Vertex        = 0x0001,
+    Hull          = 0x0002,
+    Domain        = 0x0004,
+    Geometry      = 0x0008,
+    Pixel         = 0x0010,
+    Amplification = 0x0040,
+    Mesh          = 0x0080,
+    AllGraphics   = 0x00DF,
+
+    RayGeneration = 0x0100,
+    AnyHit        = 0x0200,
+    ClosestHit    = 0x0400,
+    Miss          = 0x0800,
+    Intersection  = 0x1000,
+    Callable      = 0x2000,
+    AllRayTracing = 0x3F00,
+
+    All = 0x3FFF,
+};
+
+AXION_ENUM_CLASS_FLAG_OPERATORS( ShaderType )
+
+enum class PrimitiveTopology : uchar
+{
+    Undefined = 0,
+    PointList,
+    LineList,
+    LineStrip,
+    TriangleList,
+    TriangleStrip,
+    TriangleFan,
+    PatchList
+};
+
+enum class FillMode : uchar
+{
+    Solid     = 0,
+    Wireframe = 1
+};
+
+enum class CullMode : uchar
+{
+    None  = 0,
+    Front = 1,
+    Back  = 2
+};
+
+enum class CompareOp : uchar
+{
+    Never        = 0,
+    Less         = 1,
+    Equal        = 2,
+    LessEqual    = 3,
+    Greater      = 4,
+    NotEqual     = 5,
+    GreaterEqual = 6,
+    Always       = 7
+};
+
+enum class BlendFactor : uchar
+{
+    Zero = 0,
+    One,
+    SrcColor,
+    OneMinusSrcColor,
+    DstColor,
+    OneMinusDstColor,
+    SrcAlpha,
+    OneMinusSrcAlpha,
+    DstAlpha,
+    OneMinusDstAlpha,
+    ConstantColor,
+    OneMinusConstantColor,
+    ConstantAlpha,
+    OneMinusConstantAlpha,
+    SrcAlphaSaturate
+};
+
+enum class BlendOp : uchar
+{
+    Add = 0,
+    Subtract,
+    ReverseSubtract,
+    Min,
+    Max
+};
+
+enum class DescriptorType : uchar
+{
+    UniformBuffer = 0,     // Constant buffer / UBO
+    StorageBuffer,         // RW buffer / SSBO
+    SampledImage,          // Texture SRV
+    StorageImage,          // RW texture / UAV
+    Sampler,               // Sampler object
+    AccelerationStructure, // For raytracing
+    CombinedImageSampler   // For Vulkan convenience (DX12 splits)
+};
+
+
+enum class ShaderStage : uint8_t
+{
+    None    = 0,
+    Vertex  = 1 << 0,
+    Pixel   = 1 << 1,
+    Compute = 1 << 2,
+    All     = Vertex | Pixel | Compute
+};
+
+AXION_ENUM_CLASS_FLAG_OPERATORS( ShaderStage )
+
 typedef uint ObjectType;
 
 // ObjectTypes namespace contains identifiers for various object types.
@@ -471,6 +588,8 @@ constexpr ObjectType DX12_Resource                   = 0x00010004;
 constexpr ObjectType DX12_RenderTargetViewDescriptor = 0x00010005;
 constexpr ObjectType DX12_CommandAllocator           = 0x00010006;
 constexpr ObjectType DX12_SwapChain                  = 0x00010007;
+constexpr ObjectType DX12_PipelineState              = 0x00010008;
+constexpr ObjectType DX12_RootSignature              = 0x00010009;
 
 constexpr ObjectType VK_Device                   = 0x00020001;
 constexpr ObjectType VK_PhysicalDevice           = 0x00020002;
@@ -520,8 +639,8 @@ protected:
 
 public:
     // Intrusive ref count API
-    virtual ulong addRef() noexcept = 0;
-    virtual ulong release() noexcept = 0;
+    virtual ulong addRef() noexcept            = 0;
+    virtual ulong release() noexcept           = 0;
     virtual ulong getRefCount() const noexcept = 0;
 
     // Debug utilities (optional but very useful for graphics engines)
@@ -548,7 +667,8 @@ template <class T>
 class RefCounter : public T
 {
 public:
-    RefCounter() : _refCount(1) {
+    RefCounter()
+        : _refCount( 1 ) {
         // std::cout << "[RefCounter] Created: " << this << " RefCount=1\n";
     }
 
@@ -556,18 +676,16 @@ public:
         // std::cout << "[RefCounter] Destroyed: " << this << "\n";
     }
 
-    ulong addRef() noexcept override
-    {
+    ulong addRef() noexcept override {
         ulong val = ++_refCount;
         // std::cout << "[RefCounter] addRef: " << this << " RefCount=" << val << "\n";
         return val;
     }
 
-    ulong release() noexcept override
-    {
+    ulong release() noexcept override {
         ulong val = --_refCount;
         // std::cout << "[RefCounter] release: " << this << " RefCount=" << val << "\n";
-        if (val == 0)
+        if ( val == 0 )
         {
             // std::cout << "[RefCounter] deleting: " << this << "\n";
             delete this;
@@ -575,8 +693,7 @@ public:
         return val;
     }
 
-    ulong getRefCount() const noexcept override
-    {
+    ulong getRefCount() const noexcept override {
         return _refCount.load();
     }
 
@@ -589,44 +706,44 @@ template <class T>
 class Ptr
 {
 public:
-    Ptr() : _ptr(nullptr) {}
-    Ptr(std::nullptr_t) : _ptr(nullptr) {}
+    Ptr()
+        : _ptr( nullptr ) {}
+    Ptr( std::nullptr_t )
+        : _ptr( nullptr ) {}
 
-    Ptr(T* raw) : _ptr(raw)
-    {
+    Ptr( T* raw )
+        : _ptr( raw ) {
         internalAddRef();
     }
 
-    Ptr(const Ptr& other) : _ptr(other._ptr)
-    {
+    Ptr( const Ptr& other )
+        : _ptr( other._ptr ) {
         internalAddRef();
     }
 
-    Ptr(Ptr&& other) noexcept : _ptr(other._ptr)
-    {
+    Ptr( Ptr&& other ) noexcept
+        : _ptr( other._ptr ) {
         other._ptr = nullptr;
     }
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U*, T*>::value>>
-    Ptr(const Ptr<U>& other) : _ptr(other._ptr)
-    {
+    Ptr( const Ptr<U>& other )
+        : _ptr( other._ptr ) {
         internalAddRef();
     }
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U*, T*>::value>>
-    Ptr(Ptr<U>&& other) noexcept : _ptr(other._ptr)
-    {
+    Ptr( Ptr<U>&& other ) noexcept
+        : _ptr( other._ptr ) {
         other._ptr = nullptr;
     }
 
-    ~Ptr()
-    {
+    ~Ptr() {
         internalRelease();
     }
 
-    Ptr& operator=(const Ptr& other)
-    {
-        if (this != &other)
+    Ptr& operator=( const Ptr& other ) {
+        if ( this != &other )
         {
             internalRelease();
             _ptr = other._ptr;
@@ -638,52 +755,46 @@ public:
     // operators
     T* operator->() const { return _ptr; }
     T& operator*() const { return *_ptr; }
-    operator bool() const { return _ptr != nullptr; }
-    operator T*() const { return _ptr; }
+       operator bool() const { return _ptr != nullptr; }
+       operator T*() const { return _ptr; }
 
     T* get() const { return _ptr; }
 
     // Returns a pointer to the internal pointer (like COM & operator)
-    T** operator&()
-    {
+    T** operator&() {
         internalRelease();
         _ptr = nullptr;
         return &_ptr;
     }
 
     // Detach the pointer (caller takes ownership, RefPtr forgets it)
-    T* detach()
-    {
+    T* detach() {
         T* tmp = _ptr;
-        _ptr = nullptr;
+        _ptr   = nullptr;
         return tmp;
     }
 
     // Attach a raw pointer (takes ownership)
-    void attach(T* raw)
-    {
+    void attach( T* raw ) {
         internalRelease();
         _ptr = raw;
     }
 
     // Factory method, returns Ptr that owns new object
     template <class... Args>
-    static Ptr<T> create(Args&&... args)
-    {
-        T* obj = new T(std::forward<Args>(args)...);
-        return Ptr<T>(obj);
+    static Ptr<T> create( Args&&... args ) {
+        T* obj = new T( std::forward<Args>( args )... );
+        return Ptr<T>( obj );
     }
 
 private:
-    void internalAddRef()
-    {
-        if (_ptr)
+    void internalAddRef() {
+        if ( _ptr )
             _ptr->addRef();
     }
 
-    void internalRelease()
-    {
-        if (_ptr)
+    void internalRelease() {
+        if ( _ptr )
             _ptr->release();
         _ptr = nullptr;
     }
@@ -696,10 +807,8 @@ private:
 };
 
 #define DEFINE_COM_HANDLE_FOR_TYPE( type, clean ) \
-    class type;                               \
+    class type;                                   \
     typedef Ptr<type> clean##Handle;
-
-
 
 } // namespace RHI
 } // namespace Graphics

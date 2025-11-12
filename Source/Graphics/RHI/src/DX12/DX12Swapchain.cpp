@@ -97,7 +97,7 @@ void DX12Swapchain::update( const Description& newDesc ) {
     updateImages();
 
     AXION_LOG_INFO( Logger::Module::RHI,
-                    "DirectX12 Swapchain Updated: {}x{}, format {}",
+                    "DX12 Swapchain Updated: {}x{}, format {}",
                     _desc.size.width,
                     _desc.size.height,
                     (int)_desc.format );
@@ -108,12 +108,12 @@ uint32_t DX12Swapchain::acquireNextImage() {
     return _currentImage;
 }
 DX12Swapchain::~DX12Swapchain() {
-    AXION_LOG_INFO( Logger::Module::RHI, "Destroying Swapchain" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Swapchain [{}]", _desc.debugName );
 }
 void DX12Swapchain::updateImages() {
 
     _swapImages.resize( _desc.imageCount, nullptr );
-    TextureDesc         desc = { .viewFlags = TextureViewRenderTarget };
+    TextureDesc         desc = { .debugName = "Swapchain Backbuffer", .viewFlags = TextureViewRenderTarget };
     DX12Device::Context ctx  = { .device = _device, .heapRTV = _heapRTV };
     for ( uint i = 0; i < _desc.imageCount; ++i )
     {
@@ -173,12 +173,12 @@ NativeObject DX12Swapchain::getNativeObject( ObjectType objectType ) {
 }
 
 void DX12Swapchain::setDebugName( const std::string& name ) {
-    _name = name;
+    _desc.debugName = name;
     // _swapchain->se( std::wstring( name.begin(), name.end() ).c_str() );
 }
 
 const std::string& DX12Swapchain::getDebugName() const {
-    return _name;
+    return _desc.debugName;
 }
 
 std::string RHI::DX12Swapchain::toString() const {

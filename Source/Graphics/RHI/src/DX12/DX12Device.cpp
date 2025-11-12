@@ -13,7 +13,7 @@ DX12DeviceHandle RHI::createDX12Device( const DX12DeviceDesc& desc ) {
     DX12Device*      raw = new DX12Device( desc );
     DX12DeviceHandle dev;
     dev.attach( raw );
-    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Device Created Successfully [{}]", desc.debugName );
     return dev;
 }
 
@@ -50,7 +50,7 @@ DX12Device::DX12Device( const IDX12Device::Description& desc ) {
 }
 
 DX12Device::~DX12Device() {
-    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DirectX12 Device" );
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Device [{}]", _desc.debugName );
 }
 
 SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const SwapchainDesc& desc ) {
@@ -72,8 +72,7 @@ SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const S
     DX12Swapchain*  raw = new DX12Swapchain( hwnd, _ctx, desc );
     SwapchainHandle swp;
     swp.attach( raw );
-    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Device Created Successfully" );
-    AXION_LOG_INFO( Logger::Module::RHI, "DirectX12 Swapchain Created Successfully" );
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Swapchain Created Successfully [{}]", desc.debugName );
     return swp;
 }
 
