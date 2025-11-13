@@ -11,6 +11,7 @@ DEFINE_COM_HANDLE_FOR_TYPE( DX12PipelineLayout, DX12PipelineLayout )
 class DX12PipelineLayout final : public RefCounter<IPipelineLayout>
 {
 public:
+    
     DX12PipelineLayout( const ComPtr<ID3D12Device2>& device, const PipelineLayoutDesc& desc );
     ~DX12PipelineLayout() override;
 
@@ -21,7 +22,8 @@ public:
     std::string        toString() const override;
 
 private:
-    void buildRootSignature( const ComPtr<ID3D12Device2>& device );
+    void                           buildRootSignature( const ComPtr<ID3D12Device2>& device );
+    static D3D12_SHADER_VISIBILITY getShaderVisibility( const std::vector<DescriptorBinding>& bindings );
 
     PipelineLayoutDesc          _desc;
     ComPtr<ID3D12RootSignature> _rootSignature;
@@ -41,13 +43,32 @@ public:
     NativeObject       getNativeObject( ObjectType objectType ) override;
     std::string        toString() const override;
 
-    ID3D12PipelineState* getPipelineState() const { return _pso.Get(); }
-
 private:
     void                           createPipelineState( const ComPtr<ID3D12Device2>& device );
     static D3D12_INPUT_LAYOUT_DESC makeInputLayout( const IGraphicPipeline::Description& desc, std::vector<D3D12_INPUT_ELEMENT_DESC>& out );
 
-    Description _desc;
+    Description                 _desc;
+    ComPtr<ID3D12PipelineState> _pso;
+};
+
+DEFINE_COM_HANDLE_FOR_TYPE( DX12ComputePipeline, DX12ComputePipeline )
+
+class DX12ComputePipeline : public RefCounter<IComputePipeline>
+{
+public:
+    DX12ComputePipeline( const ComPtr<ID3D12Device2>& device, const Description& desc );
+    ~DX12ComputePipeline() override;
+
+    const Description& getDescription() const override { return _desc; }
+    void               setDebugName( const std::string& name ) override;
+    const std::string& getDebugName() const override { return _desc.debugName; }
+    NativeObject       getNativeObject( ObjectType objectType ) override;
+    std::string        toString() const override;
+
+private:
+    void                           createPipelineState( const ComPtr<ID3D12Device2>& device );
+
+    Description                 _desc;
     ComPtr<ID3D12PipelineState> _pso;
 };
 

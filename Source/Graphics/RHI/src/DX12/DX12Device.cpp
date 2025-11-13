@@ -1,6 +1,7 @@
 #include "DX12Device.hpp"
 #include "DX12CommandList.hpp"
 #include "DX12Debug.hpp"
+#include "DX12Pipeline.hpp"
 #include "DX12Resource.hpp"
 #include "DX12Swapchain.hpp"
 #include "DX12TranslatorUnit.h"
@@ -91,7 +92,31 @@ TextureHandle DX12Device::createTexture( const TextureDesc& desc, const void* in
 }
 
 BufferHandle RHI::DX12Device::createBuffer( const BufferDesc& desc, const void* initialData ) {
-    return nullptr;
+    DX12Buffer*  raw = new DX12Buffer( desc, _ctx, initialData );
+    BufferHandle buff;
+    buff.attach( raw );
+    return buff;
+}
+
+PipelineLayoutHandle DX12Device::createPipelineLayout( const PipelineLayoutDesc& desc ) {
+    DX12PipelineLayout*  raw = new DX12PipelineLayout( _ctx.device, desc );
+    PipelineLayoutHandle layout;
+    layout.attach( raw );
+    return layout;
+}
+
+GraphicPipelineHandle DX12Device::createGraphicPipeline( const GraphicPipelineDesc& desc ) {
+    DX12GraphicPipeline*  raw = new DX12GraphicPipeline( _ctx.device, desc );
+    GraphicPipelineHandle pip;
+    pip.attach( raw );
+    return pip;
+}
+
+ComputePipelineHandle DX12Device::createComputePipeline( const ComputePipelineDesc& desc ) {
+    DX12ComputePipeline*  raw = new DX12ComputePipeline( _ctx.device, desc );
+    ComputePipelineHandle pip;
+    pip.attach( raw );
+    return pip;
 }
 
 void DX12Device::executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) {

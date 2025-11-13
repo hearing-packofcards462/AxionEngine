@@ -14,10 +14,13 @@ public:
     DX12Device( const IDX12Device::Description& desc );
     ~DX12Device() override;
 
-    SwapchainHandle   createSwapchain( const NativeObject& handle, const SwapchainDesc& desc = {} ) override;
-    CommandListHandle createCommandList( const CommandListDesc& desc ) override;
-    TextureHandle     createTexture( const TextureDesc& desc, const void* initialData = nullptr ) override;
-    BufferHandle      createBuffer( const BufferDesc& desc, const void* initialData = nullptr ) override;
+    SwapchainHandle       createSwapchain( const NativeObject& handle, const SwapchainDesc& desc = {} ) override;
+    CommandListHandle     createCommandList( const CommandListDesc& desc ) override;
+    TextureHandle         createTexture( const TextureDesc& desc, const void* initialData = nullptr ) override;
+    BufferHandle          createBuffer( const BufferDesc& desc, const void* initialData = nullptr ) override;
+    PipelineLayoutHandle  createPipelineLayout( const PipelineLayoutDesc& desc ) override;
+    GraphicPipelineHandle createGraphicPipeline( const GraphicPipelineDesc& desc ) override;
+    ComputePipelineHandle createComputePipeline( const ComputePipelineDesc& desc ) override;
 
     void executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) override;
     void waitForFrame( const Fence& frameFence, QueueType workingQueue ) override;

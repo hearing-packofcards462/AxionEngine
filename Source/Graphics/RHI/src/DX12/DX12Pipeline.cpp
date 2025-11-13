@@ -5,7 +5,8 @@
 AXION_NAMESPACE_BEGIN
 namespace Graphics::RHI {
 
-DX12PipelineLayout::DX12PipelineLayout( const ComPtr<ID3D12Device2>& device, const PipelineLayoutDesc& desc ) _desc( desc ) {
+DX12PipelineLayout::DX12PipelineLayout( const ComPtr<ID3D12Device2>& device, const PipelineLayoutDesc& desc )
+    : _desc( desc ) {
     buildRootSignature( device );
 }
 DX12PipelineLayout::~DX12PipelineLayout() {
@@ -21,7 +22,7 @@ NativeObject DX12PipelineLayout::getNativeObject( ObjectType objectType ) {
     switch ( objectType )
     {
         case ObjectTypes::DX12_RootSignature:
-            return NativeObject( objectType, _rootSig.Get() );
+            return NativeObject( objectType, _rootSignature.Get() );
         default:
             AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Pipeline Layout | Wrong Object Type" );
             return nullptr;
@@ -48,24 +49,7 @@ void DX12PipelineLayout::buildRootSignature( const ComPtr<ID3D12Device2>& device
         std::vector<CD3DX12_DESCRIPTOR_RANGE1> setRanges;
         for ( const auto& binding : set.bindings )
         {
-            D3D12_DESCRIPTOR_RANGE_TYPE rangeType {};
-            switch ( binding.type )
-            {
-                case DescriptorType::Sampler:
-                    rangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-                    break;
-                case DescriptorType::TextureSRV:
-                    rangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-                    break;
-                case DescriptorType::TextureUAV:
-                    rangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-                    break;
-                case DescriptorType::ConstantBuffer:
-                    rangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-                    break;
-                default:
-                    continue;
-            }
+            D3D12_DESCRIPTOR_RANGE_TYPE rangeType = DX12Translator::get( binding.type );
 
             CD3DX12_DESCRIPTOR_RANGE1 range;
             range.Init(
@@ -77,7 +61,6 @@ void DX12PipelineLayout::buildRootSignature( const ComPtr<ID3D12Device2>& device
             setRanges.push_back( range );
         }
 
-        // Store contiguous ranges (we need stable memory)
         uint32_t baseRangeIndex = static_cast<uint32_t>( ranges.size() );
         ranges.insert( ranges.end(), setRanges.begin(), setRanges.end() );
 
@@ -85,15 +68,15 @@ void DX12PipelineLayout::buildRootSignature( const ComPtr<ID3D12Device2>& device
         param.InitAsDescriptorTable(
             static_cast<UINT>( setRanges.size() ),
             &ranges[baseRangeIndex],
-            DX12Translator::getShaderVisibility( set.bindings ) );
+            getShaderVisibility( set.bindings ) );
         rootParams.push_back( param );
     }
 
-    // Optional push constants
-    if ( _desc.pushConstantSize > 0 )
+    // Optional Push Constants
+    if ( _desc.pushConstant.size > 0 )
     {
         CD3DX12_ROOT_PARAMETER1 pushParam;
-        pushParam.InitAsConstants( _desc.pushConstantSize / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL );
+        pushParam.InitAsConstants( _desc.pushConstant.size / 4, 0, 0, DX12Translator::get( _desc.pushConstant.stageMask ) );
         rootParams.push_back( pushParam );
     }
 
@@ -107,8 +90,15 @@ void DX12PipelineLayout::buildRootSignature( const ComPtr<ID3D12Device2>& device
 
     ComPtr<ID3DBlob> serialized, error;
     DX_CHECK( D3D12SerializeVersionedRootSignature( &rsDesc, &serialized, &error ) );
-    DX_CHECK( _device->getNative()->CreateRootSignature(
+    DX_CHECK( device->CreateRootSignature(
         0, serialized->GetBufferPointer(), serialized->GetBufferSize(), IID_PPV_ARGS( &_rootSignature ) ) );
+}
+
+D3D12_SHADER_VISIBILITY DX12PipelineLayout::getShaderVisibility( const std::vector<DescriptorBinding>& bindings ) {
+    ShaderStage mask = ShaderStage::None;
+    for ( auto& b : bindings )
+        mask |= b.stageMask;
+    return DX12Translator::get( mask );
 }
 
 DX12GraphicPipeline::DX12GraphicPipeline( const ComPtr<ID3D12Device2>& device, const Description& desc )
@@ -127,7 +117,7 @@ DX12GraphicPipeline::DX12GraphicPipeline( const ComPtr<ID3D12Device2>& device, c
 
     AXION_LOG_ASSERT( vsModule && psModule, Logger::Module::GFX, "DX12 Graphic Pipeline requires at least VS and PS modules." );
 
-    createRootSignature( device );
+    // createRootSignature( device );
     createPipelineState( device );
 
     setDebugName( _desc.debugName );
@@ -176,7 +166,8 @@ void DX12GraphicPipeline::createPipelineState( const ComPtr<ID3D12Device2>& devi
     // Set up PSO desc
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     ZeroMemory( &psoDesc, sizeof( psoDesc ) );
-    psoDesc.pRootSignature = _rootSig.Get();
+    AXION_LOG_ASSERT( _desc.layout, Logger::Module::RHI, "Fatal | No layout defined for Graphic Pipeline [{}]", _desc.debugName );
+    psoDesc.pRootSignature = _desc.layout->getNativeObject( ObjectTypes::DX12_RootSignature );
 
     // Shader byte code blobs
     if ( vsModule )
@@ -286,6 +277,53 @@ D3D12_INPUT_LAYOUT_DESC DX12GraphicPipeline::makeInputLayout( const IGraphicPipe
     ret.pInputElementDescs = out.data();
     ret.NumElements        = static_cast<UINT>( out.size() );
     return ret;
+}
+
+DX12ComputePipeline::DX12ComputePipeline( const ComPtr<ID3D12Device2>& device, const Description& desc )
+    : _desc( desc ) {
+    // Basic validation: need at least vertex and pixel for graphics PSO
+    const ShaderModule* compModule = nullptr;
+    compModule                     = &_desc.shaderModule;
+
+    AXION_LOG_ASSERT( compModule, Logger::Module::GFX, "DX12 Compute Pipeline requires a Compute module." );
+
+    createPipelineState( device );
+
+    setDebugName( _desc.debugName );
+}
+
+DX12ComputePipeline::~DX12ComputePipeline() {
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Compute Pipeline [{}]", _desc.debugName );
+}
+
+void DX12ComputePipeline::setDebugName( const std::string& name ) {
+    _desc.debugName = name;
+    _pso->SetName( std::wstring( name.begin(), name.end() ).c_str() );
+}
+
+NativeObject DX12ComputePipeline::getNativeObject( ObjectType objectType ) {
+    switch ( objectType )
+    {
+        case ObjectTypes::DX12_PipelineState:
+            return NativeObject( objectType, _pso.Get() );
+        default:
+            AXION_LOG_ERROR( Logger::Module::RHI, "DX12 Compute Pipeline | Wrong Object Type" );
+            return nullptr;
+    }
+}
+
+std::string DX12ComputePipeline::toString() const {
+    return std::string();
+}
+
+void DX12ComputePipeline::createPipelineState( const ComPtr<ID3D12Device2>& device ) {
+    // D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
+    // psoDesc.pRootSignature                    = _desc.layout->getNativeObject( ObjectTypes::DX12_RootSignature );
+    // psoDesc.CS                                = { _desc.shaderModule.code, _desc.shaderModule.codeSize };
+    // psoDesc.Flags                             = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+    // DX_CHECK( device->CreateComputePipelineState( &psoDesc, IID_PPV_ARGS( &_pso ) ) );
+    // setDebugName( _pso.Get(), _desc.debugName.c_str() );
 }
 
 } // namespace Graphics::RHI

@@ -553,14 +553,17 @@ enum class DescriptorType : uchar
     CombinedImageSampler   // For Vulkan convenience (DX12 splits)
 };
 
-
 enum class ShaderStage : uint8_t
 {
-    None    = 0,
-    Vertex  = 1 << 0,
-    Pixel   = 1 << 1,
-    Compute = 1 << 2,
-    All     = Vertex | Pixel | Compute
+    None     = 0,
+    Vertex   = 1 << 0,
+    Pixel    = 1 << 1,
+    Hull     = 1 << 2,
+    Domain   = 1 << 3,
+    Geometry = 1 << 4,
+    Compute  = 1 << 5,
+    Mesh     = 1 << 6,
+    All      = Vertex | Pixel | Hull | Domain | Geometry | Compute | Mesh
 };
 
 AXION_ENUM_CLASS_FLAG_OPERATORS( ShaderStage )

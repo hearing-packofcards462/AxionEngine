@@ -463,6 +463,59 @@ constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE get( PrimitiveTopology topology ) noexce
     }
 }
 
+constexpr D3D12_DESCRIPTOR_RANGE_TYPE get( DescriptorType type ) noexcept {
+    switch ( type )
+    {
+        case DescriptorType::UniformBuffer:
+            return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+
+        case DescriptorType::StorageBuffer:
+        case DescriptorType::StorageImage:
+            return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+
+        case DescriptorType::SampledImage:
+        case DescriptorType::AccelerationStructure:
+            return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+
+        case DescriptorType::Sampler:
+            return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+
+        case DescriptorType::CombinedImageSampler:
+            // Vulkan-only combined type — not valid in DX12
+            AXION_LOG_ASSERT( false, Logger::Module::RHI, "CombinedImageSampler not supported in DX12 (split SRV + SAMPLER)." );
+            return D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // fallback to SRV for debug builds
+    }
+
+    // default fallback
+    return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+};
+
+constexpr D3D12_SHADER_VISIBILITY get( ShaderStage stages ) noexcept {
+    // If multiple stages are specified → must use ALL
+    const bool multiple =
+        ( uint8_t( stages ) & ( uint8_t( stages ) - 1 ) ) != 0; // check if more than one bit set
+    if ( multiple )
+        return D3D12_SHADER_VISIBILITY_ALL;
+
+    switch ( stages )
+    {
+        case ShaderStage::Vertex:
+            return D3D12_SHADER_VISIBILITY_VERTEX;
+        case ShaderStage::Pixel:
+            return D3D12_SHADER_VISIBILITY_PIXEL;
+        case ShaderStage::Geometry:
+            return D3D12_SHADER_VISIBILITY_GEOMETRY;
+        case ShaderStage::Hull:
+            return D3D12_SHADER_VISIBILITY_HULL;
+        case ShaderStage::Domain:
+            return D3D12_SHADER_VISIBILITY_DOMAIN;
+        case ShaderStage::Mesh:
+            return D3D12_SHADER_VISIBILITY_MESH;
+        default:
+            return D3D12_SHADER_VISIBILITY_ALL;
+    }
+}
+
 // Full D3D12_PRIMITIVE_TOPOLOGY (needed when calling IASetPrimitiveTopology)
 constexpr D3D12_PRIMITIVE_TOPOLOGY getFullTopology( PrimitiveTopology topology ) noexcept {
     switch ( topology )

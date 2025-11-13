@@ -1,4 +1,5 @@
 #pragma once
+#include "Axion/Common/Math.h"
 #include "Axion/Graphics/RHI/Common.h"
 #include "Axion/Graphics/RHI/Descriptor.h"
 
@@ -20,10 +21,14 @@ DEFINE_COM_HANDLE_FOR_TYPE( IPipelineLayout, PipelineLayout )
 class IPipelineLayout : public IResource
 {
 public:
+    struct PushConstantDesc {
+        uint        size      = 0;
+        ShaderStage stageMask = ShaderStage::Vertex | ShaderStage::Pixel;
+    };
     struct Description {
         std::vector<DescriptorLayoutDesc> sets;
-        uint                              pushConstantSize = 0;
-        std::string                       debugName        = "";
+        PushConstantDesc                  pushConstant;
+        std::string                       debugName = "";
     };
     virtual ~IPipelineLayout()                        = default;
     virtual const Description& getDescription() const = 0;
@@ -91,6 +96,7 @@ public:
     struct Description {
 
         std::vector<ShaderModule> shaderModules;
+        IPipelineLayout*          layout = nullptr;
 
         std::vector<VertexBinding>   bindings;
         std::vector<VertexAttribute> attributes;
@@ -101,12 +107,10 @@ public:
         std::vector<Format> renderTargetFormats; // empty -> no color outputs
         Format              depthStencilFormat = Format::UNKNOWN;
 
-        BlendState                       blendState;
-        RasterizerState                  rasterizerState;
-        DepthStencilState                depthStencilState;
-        std::vector<DescriptorSetLayout> descriptorSets;       // one or more descriptor set layouts
-        uint                             pushConstantSize = 0; // bytes (if supported)
-        // Misc
+        BlendState        blendState;
+        RasterizerState   rasterizerState;
+        DepthStencilState depthStencilState;
+
         uint        sampleMask = 0xFFFFFFFF;
         std::string debugName  = "";
     };
@@ -115,6 +119,26 @@ public:
 };
 
 typedef IGraphicPipeline::Description GraphicPipelineDesc;
+
+DEFINE_COM_HANDLE_FOR_TYPE( IComputePipeline, ComputePipeline )
+
+class IComputePipeline : public IResource
+{
+    public:
+    struct Description {
+        ShaderModule     shaderModule;        ///< Only one: compute shader
+        IPipelineLayout* layout    = nullptr; ///< Root signature
+        std::string      debugName = "";
+        
+        // Optional metadata (for reflection or validation)
+        Math::iVec3 threadGroupSize = { 0, 0, 0 }; // (x, y, z) group size from shader
+    };
+    
+    virtual ~IComputePipeline()                       = default;
+    virtual const Description& getDescription() const = 0;
+};
+
+typedef IComputePipeline::Description ComputePipelineDesc;
 
 } // namespace Graphics::RHI
 
