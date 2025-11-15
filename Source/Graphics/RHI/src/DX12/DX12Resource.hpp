@@ -13,7 +13,6 @@ DEFINE_COM_HANDLE_FOR_TYPE( DX12Texture, DX12Texture )
 class DX12Texture : public RefCounter<ITexture>
 {
 public:
-    ~DX12Texture() override;
     DX12Texture( const TextureDesc&   desc,
                  DX12Device::Context& ctx,
                  const void*          initialData = nullptr );
@@ -21,6 +20,7 @@ public:
                  const TextureDesc&            desc,
                  DX12Device::Context&          ctx,
                  bool                          useDecriptionParams );
+    ~DX12Texture() override;
 
     const TextureDesc&    getDescription() const override;
     void                  setDebugName( const std::string& name ) override;
@@ -55,11 +55,11 @@ DEFINE_COM_HANDLE_FOR_TYPE( DX12Buffer, DX12Buffer )
 class DX12Buffer : public RefCounter<IBuffer>
 {
 public:
-    ~DX12Buffer() override;
     DX12Buffer(
         const BufferDesc&    desc,
         DX12Device::Context& ctx,
         const void*          initialData = nullptr );
+    ~DX12Buffer() override;
 
     const BufferDesc&     getDescription() const override { return _desc; }
     void*                 map() override;

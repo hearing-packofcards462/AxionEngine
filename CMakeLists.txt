@@ -1,3 +1,7 @@
+# =========================================================================
+# AXION ENGINE ROOT CONFIGURATION
+# =========================================================================
+
 cmake_minimum_required(VERSION 3.16)
 project(AxionEngine)
 
@@ -24,11 +28,20 @@ add_custom_target(doc
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating Axion Engine API documentation with Doxygen"
     VERBATIM
-)
+    )
 
+# CMake Modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+    
+# =========================================================================
 # Add External Libraries and Depdencies
-option(BUILD_GLFW "Build GLFW as part of this project" ON)
-add_subdirectory(ThirdParty)
+# =========================================================================
+
+include(AddDependencies)
+
+# =========================================================================
+# Engine Source
+# =========================================================================
 
 add_subdirectory(Source/Common)
 add_subdirectory(Source/Graphics)

@@ -34,6 +34,9 @@ d3dcompiler.lib
 user32.lib
 dxguid.lib
 # Vulkan
+
+# Slang
+
 #Internal Modules
 AxionCommon
 )

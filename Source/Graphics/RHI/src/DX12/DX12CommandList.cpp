@@ -19,6 +19,8 @@ DX12CommandList::DX12CommandList( const ComPtr<ID3D12Device2>& device, const Com
     DX_CHECK( device->CreateCommandList( 0, dx12type, _cmdAllocators[0].Get(), nullptr, IID_PPV_ARGS( &_cmdList ) ) );
 
     DX_CHECK( _cmdList->Close() );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Command List [{}] created", _desc.debugName );
 }
 
 DX12CommandList::~DX12CommandList() {

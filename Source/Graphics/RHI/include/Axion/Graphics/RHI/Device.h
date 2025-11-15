@@ -18,7 +18,8 @@ struct Fence {
 class IDevice : public IResource
 {
 public:
-    virtual ~IDevice()                                                                                          = default;
+    virtual ~IDevice() = default;
+
     virtual SwapchainHandle       createSwapchain( const NativeObject& handle, const SwapchainDesc& desc = {} ) = 0;
     virtual CommandListHandle     createCommandList( const CommandListDesc& desc )                              = 0;
     virtual TextureHandle         createTexture( const TextureDesc& desc, const void* initialData = nullptr )   = 0;

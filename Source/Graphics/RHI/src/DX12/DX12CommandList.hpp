@@ -11,6 +11,7 @@ DEFINE_COM_HANDLE_FOR_TYPE( DX12CommandList, DX12CommandList )
 class DX12CommandList : public RefCounter<ICommandList>
 {
 public:
+    DX12CommandList( const ComPtr<ID3D12Device2>& device, const CommandListDesc& desc );
     ~DX12CommandList() override;
 
     void                   begin() override;
@@ -27,8 +28,6 @@ public:
     void               setDebugName( const std::string& name ) override;
     const std::string& getDebugName() const override;
     std::string        toString() const override;
-
-    DX12CommandList( const ComPtr<ID3D12Device2>& device, const CommandListDesc& desc );
 
 private:
     ComPtr<ID3D12GraphicsCommandList>           _cmdList;

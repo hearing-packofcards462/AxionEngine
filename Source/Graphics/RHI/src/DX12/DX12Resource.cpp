@@ -58,6 +58,8 @@ DX12Texture::DX12Texture( const TextureDesc& desc, DX12Device::Context& ctx, con
 
     if ( initialData )
         uploadInitialData( ctx, initialData );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Texture created [{}]", _desc.debugName );
 }
 
 DX12Texture::DX12Texture( const ComPtr<ID3D12Resource>& resource,
@@ -69,6 +71,8 @@ DX12Texture::DX12Texture( const ComPtr<ID3D12Resource>& resource,
     , _stateTracker( desc.mipLevels, desc.arraySize ) {
     createViews( ctx, useDecriptionParams );
     setDebugName( _desc.debugName );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Texture created [{}]", _desc.debugName );
 }
 
 DX12Texture::~DX12Texture() {
@@ -282,6 +286,8 @@ DX12Buffer::DX12Buffer( const BufferDesc&    desc,
         uploadInitialData( ctx, initialData );
 
     createViews( ctx );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Buffer created [{}]", _desc.debugName );
 }
 
 void* DX12Buffer::map() {
@@ -438,6 +444,7 @@ void DX12Buffer::uploadInitialData( DX12Device::Context& ctx, const void* initia
 }
 
 DX12Buffer::~DX12Buffer() {
+    AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Buffer [{}]", _desc.debugName );
 }
 #pragma endregion
 

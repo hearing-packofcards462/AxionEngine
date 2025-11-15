@@ -51,6 +51,8 @@ DX12Swapchain::DX12Swapchain( const HWND                     hwnd,
 
     // Create backbuffers
     updateImages();
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Swapchain created [{}]", _desc.debugName );
 }
 
 uint32_t DX12Swapchain::getCurrentImageIndex() {

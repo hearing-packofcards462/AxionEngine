@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Axion/Graphics/RHI/Common.h"
+#include "Axion/Graphics/RHI/Swapchain.h"
 #include "DX12Device.hpp"
 #include "DX12Resource.hpp"
 #include "DX12TranslatorUnit.h"
-#include "Axion/Graphics/RHI/Common.h"
-#include "Axion/Graphics/RHI/Swapchain.h"
 
 AXION_NAMESPACE_BEGIN
 
@@ -15,6 +15,7 @@ DEFINE_COM_HANDLE_FOR_TYPE( DX12Swapchain, DX12Swapchain )
 class DX12Swapchain final : public RefCounter<ISwapchain>
 {
 public:
+    DX12Swapchain( const HWND hwnd, DX12Device::Context& ctx, const ISwapchain::Description& desc );
     ~DX12Swapchain() override;
 
     void                              updateImages() override;
@@ -29,8 +30,6 @@ public:
     void               setDebugName( const std::string& name ) override;
     const std::string& getDebugName() const override;
     std::string        toString() const override;
-
-    DX12Swapchain( const HWND hwnd, DX12Device::Context& ctx, const ISwapchain::Description& desc );
 
 private:
     bool checkTearingSupport();

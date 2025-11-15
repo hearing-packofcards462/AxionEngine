@@ -121,6 +121,8 @@ DX12GraphicPipeline::DX12GraphicPipeline( const ComPtr<ID3D12Device2>& device, c
     createPipelineState( device );
 
     setDebugName( _desc.debugName );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Graphic Pipeline [{}] created", _desc.debugName );
 }
 DX12GraphicPipeline::~DX12GraphicPipeline() {
     AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Graphic Pipeline [{}]", _desc.debugName );
@@ -290,6 +292,8 @@ DX12ComputePipeline::DX12ComputePipeline( const ComPtr<ID3D12Device2>& device, c
     createPipelineState( device );
 
     setDebugName( _desc.debugName );
+
+    AXION_LOG_INFO( Logger::Module::RHI, "DX12 Compute Pipeline [{}] created", _desc.debugName );
 }
 
 DX12ComputePipeline::~DX12ComputePipeline() {
@@ -317,13 +321,15 @@ std::string DX12ComputePipeline::toString() const {
 }
 
 void DX12ComputePipeline::createPipelineState( const ComPtr<ID3D12Device2>& device ) {
-    // D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
-    // psoDesc.pRootSignature                    = _desc.layout->getNativeObject( ObjectTypes::DX12_RootSignature );
-    // psoDesc.CS                                = { _desc.shaderModule.code, _desc.shaderModule.codeSize };
-    // psoDesc.Flags                             = D3D12_PIPELINE_STATE_FLAG_NONE;
 
-    // DX_CHECK( device->CreateComputePipelineState( &psoDesc, IID_PPV_ARGS( &_pso ) ) );
-    // setDebugName( _pso.Get(), _desc.debugName.c_str() );
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.pRootSignature                    = _desc.layout->getNativeObject( ObjectTypes::DX12_RootSignature );
+    psoDesc.CS                                = { _desc.shaderModule.code, _desc.shaderModule.codeSize };
+    psoDesc.Flags                             = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+    DX_CHECK( device->CreateComputePipelineState( &psoDesc, IID_PPV_ARGS( &_pso ) ) );
+    
 }
 
 } // namespace Graphics::RHI
