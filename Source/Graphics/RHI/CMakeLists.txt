@@ -19,7 +19,8 @@ add_library(AxionRHI STATIC ${RHI_SOURCES})
 target_include_directories(AxionRHI
 PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/include   
-${CMAKE_SOURCE_DIR}/ThirdParty/Directx/include    
+${CMAKE_SOURCE_DIR}/ThirdParty/directx-headers/include    
+${Vulkan_INCLUDE_DIRS}
 PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}/src  
 )
@@ -34,9 +35,8 @@ d3dcompiler.lib
 user32.lib
 dxguid.lib
 # Vulkan
-
-# Slang
-
+# All include headers + vulkan.lib only
+Vulkan::Vulkan 
 #Internal Modules
 AxionCommon
 )

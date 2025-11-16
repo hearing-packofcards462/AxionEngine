@@ -8,7 +8,6 @@ add_executable(AxionEditor ${APP_SOURCES})
 target_link_libraries(AxionEditor
    AxionCommon
    AxionGFX
-   AxionRHI
 )
 
 

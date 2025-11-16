@@ -3,6 +3,7 @@
 #include "Axion/Graphics/Platforms/GLFW.h"
 #include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/Renderer.h"
+#include "Axion/Graphics/ShaderProgram/ShaderCompiler.h"
 
 USING_AXION_NAMESPACE
 
@@ -20,6 +21,8 @@ int main( /*int argc, char* argv[]*/ ) {
                                                     { .gfxApi        = Graphics::API::DirectX12,
                                                       .bufferingType = Graphics::BufferingType::Double,
                                                       .presentMode   = Graphics::PresentMode::Vsync } );
+
+        Axion::Graphics::ShaderCompiler::testCompile();
 
         while ( !wnd->shouldClose() )
         {

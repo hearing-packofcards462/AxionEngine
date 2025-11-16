@@ -4,14 +4,6 @@
 #include "Axion/Common/Logging.h"
 #include "Axion/Common/Math.h"
 
-// GLFW
-// #ifdef BUILD_GLFW
-// #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-// #endif
-
 // DirectX 12
 using namespace Microsoft::WRL;
 
@@ -23,6 +15,15 @@ using namespace Microsoft::WRL;
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #pragma comment( lib, "dxguid.lib" )
+
+// Vulkan
+#include <vulkan/vulkan.h>
+// GLFW
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 
 AXION_NAMESPACE_BEGIN
 

@@ -4,6 +4,4 @@
 [submodule "ThirdParty/fmt"]
 	path = ThirdParty/fmt
 	url = https://github.com/fmtlib/fmt.git
-[submodule "ThirdParty/slang"]
-	path = ThirdParty/slang
-	url = https://github.com/shader-slang/slang.git
+
