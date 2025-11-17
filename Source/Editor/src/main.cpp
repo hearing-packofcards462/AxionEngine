@@ -22,7 +22,13 @@ int main( /*int argc, char* argv[]*/ ) {
                                                       .bufferingType = Graphics::BufferingType::Double,
                                                       .presentMode   = Graphics::PresentMode::Vsync } );
 
-        Axion::Graphics::ShaderCompiler::testCompile();
+        Axion::Graphics::SlangShaderCompiler compiler;
+        compiler.begin();
+        Axion::Graphics::SlangCompileDesc compileDesc {};
+        compileDesc.path = AXION_SHADER_DIR "/Slang/TestShader.slang";
+        std::vector<uchar> outDXILCode;
+        compiler.compileFile( compileDesc, outDXILCode );
+        compiler.end();
 
         while ( !wnd->shouldClose() )
         {

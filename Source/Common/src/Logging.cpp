@@ -90,6 +90,8 @@ const char* Logger::moduleToString( Module module ) {
             return "Core";
         case Module::GFX:
             return "GFX";
+        case Module::Shader:
+            return "GFX::Shader";
         case Module::RHI:
             return "GFX::RHI";
         case Module::Editor:
@@ -101,46 +103,43 @@ const char* Logger::moduleToString( Module module ) {
 
 // ----------------- Logging -----------------
 
-void Logger::log(Level level, Module module, const std::string& message)
-{
-    if (level < instance()._logLevel)
+void Logger::log( Level level, Module module, const std::string& message ) {
+    if ( level < instance()._logLevel )
         return;
 
-    std::lock_guard<std::mutex> lock(instance()._mtx);
+    std::lock_guard<std::mutex> lock( instance()._mtx );
 
     std::string timestamp = getTimestamp();
-    std::string header = fmt::format("[AXION][{}][{}][{}] ", 
-                                     timestamp,
-                                     levelToString(level),
-                                     moduleToString(module));
+    std::string header    = fmt::format( "[AXION][{}][{}][{}] ",
+                                      timestamp,
+                                      levelToString( level ),
+                                      moduleToString( module ) );
 
     std::string output;
 
     // If you still want multi-line indentation:
-    if (message.find('\n') != std::string::npos)
+    if ( message.find( '\n' ) != std::string::npos )
     {
-        std::istringstream stream(message);
-        std::string line;
+        std::istringstream stream( message );
+        std::string        line;
         output = header + "\n";
-        while (std::getline(stream, line))
+        while ( std::getline( stream, line ) )
         {
-            if (!line.empty())
+            if ( !line.empty() )
                 output += "    " + line + "\n"; // indent nicely
         }
-    }
-    else
+    } else
     {
         output = header + message;
     }
 
     // Console output with color
-    std::cout << levelColor(level) << output << resetColor() << std::endl;
+    std::cout << levelColor( level ) << output << resetColor() << std::endl;
 
     // File output if enabled
-    if (instance()._logFile.is_open())
+    if ( instance()._logFile.is_open() )
         instance()._logFile << output << std::endl;
 }
-
 
 void Logger::log( Level level, Module module, const std::string& message, const char* file, int line, const char* func ) {
     if ( level < instance()._logLevel )

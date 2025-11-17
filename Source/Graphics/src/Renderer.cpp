@@ -39,6 +39,7 @@ Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
     _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
     _commandList    = _device->createCommandList( { .queueType = RHI::QueueType::Graphics, .numFrames = _FRAMES_IN_FLIGHT, .debugName = "Graphics Command List" } );
+    
 }
 
 Renderer::~Renderer() {

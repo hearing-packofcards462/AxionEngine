@@ -48,3 +48,6 @@ add_subdirectory(Source/Graphics)
 add_subdirectory(Source/EngineCore)
 add_subdirectory(Source/Editor)
 
+# =========================================================================
+# Resources Configuration
+# =========================================================================

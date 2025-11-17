@@ -41,7 +41,8 @@ public:
         Editor, /**< Editor Application */
         Core,   /**< Core engine systems */
         GFX,    /**< Graphics system */
-        RHI     /**< Rendering Hardware Interface Subsystem*/
+        RHI,    /**< Rendering Hardware Interface Subsystem*/
+        Shader  /**< Shader Compiling*/
     };
 
     /**
