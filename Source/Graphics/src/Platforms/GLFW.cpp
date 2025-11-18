@@ -4,7 +4,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-WindowHandle createWindowForGLFW( const WindowSettings& settings ) {
+WindowPtr createWindowForGLFW( const WindowSettings& settings ) {
     return NEW_S( GLFWWindow )( settings );
 }
 

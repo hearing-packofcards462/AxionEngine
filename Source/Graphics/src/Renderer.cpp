@@ -6,14 +6,14 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-RendererHandle Graphics::createRenderer( const WindowHandle& wnd, const RendererSettings& settings ) {
+RendererPtr Graphics::createRenderer( const WindowPtr& wnd, const RendererSettings& settings ) {
     auto rnd = NEW_S( Renderer )( wnd, settings );
     AXION_LOG_INFO( Logger::Module::GFX, "Renderer Created Succesfully" );
     AXION_LOG_INFO( Logger::Module::GFX, rnd->toString() );
     return rnd;
 }
 
-Renderer::Renderer( const WindowHandle& wnd, const RendererSettings& settings )
+Renderer::Renderer( const WindowPtr& wnd, const RendererSettings& settings )
     : _wnd( wnd )
     , _setts( settings )
     , _FRAMES_IN_FLIGHT( static_cast<uint>( settings.bufferingType ) + 1 ) {
@@ -94,11 +94,11 @@ bool Renderer::isHeadless() {
     return false;
 }
 
-const WindowHandle& Renderer::getWindow() {
+const WindowPtr& Renderer::getWindow() {
     return _wnd;
 }
 
-const RHI::DeviceHandle& Renderer::getDevice() const {
+const RHI::DevicePtr& Renderer::getDevice() const {
     return _device;
 }
 
@@ -123,7 +123,7 @@ std::string Renderer::toString() const {
         _setts.debugMode );
 }
 
-void Renderer::setWindow( const WindowHandle& wnd ) {
+void Renderer::setWindow( const WindowPtr& wnd ) {
     _wnd            = wnd;
     _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = _setts.presentMode } );
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
@@ -131,6 +131,10 @@ void Renderer::setWindow( const WindowHandle& wnd ) {
 
 const RendererSettings& Renderer::getSettings() const {
     return _setts;
+}
+
+const GPUResourcePoolPtr& Renderer::getResourcePool() const {
+    return _resourcePool;
 }
 
 void Renderer::windowCallback( const Extent2D& newSize ) {

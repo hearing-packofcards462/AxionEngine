@@ -8,7 +8,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_COM_HANDLE_FOR_TYPE( DX12Texture, DX12Texture )
+DEFINE_COM_PTR_FOR_TYPE( DX12Texture, DX12Texture )
 
 class DX12Texture : public RefCounter<ITexture>
 {
@@ -50,7 +50,7 @@ private:
     D3D12_CPU_DESCRIPTOR_HANDLE _dsvHandle = {};
 };
 
-DEFINE_COM_HANDLE_FOR_TYPE( DX12Buffer, DX12Buffer )
+DEFINE_COM_PTR_FOR_TYPE( DX12Buffer, DX12Buffer )
 
 class DX12Buffer : public RefCounter<IBuffer>
 {

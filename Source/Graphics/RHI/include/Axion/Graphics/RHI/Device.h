@@ -9,7 +9,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_COM_HANDLE_FOR_TYPE( IDevice, Device )
+DEFINE_COM_PTR_FOR_TYPE( IDevice, Device )
 
 struct Fence {
     ulong value = 0;
@@ -20,13 +20,13 @@ class IDevice : public IResource
 public:
     virtual ~IDevice() = default;
 
-    virtual SwapchainHandle       createSwapchain( const NativeObject& handle, const SwapchainDesc& desc = {} ) = 0;
-    virtual CommandListHandle     createCommandList( const CommandListDesc& desc )                              = 0;
-    virtual TextureHandle         createTexture( const TextureDesc& desc, const void* initialData = nullptr )   = 0;
-    virtual BufferHandle          createBuffer( const BufferDesc& desc, const void* initialData = nullptr )     = 0;
-    virtual PipelineLayoutHandle  createPipelineLayout( const PipelineLayoutDesc& desc )                        = 0;
-    virtual GraphicPipelineHandle createGraphicPipeline( const GraphicPipelineDesc& desc )                      = 0;
-    virtual ComputePipelineHandle createComputePipeline( const ComputePipelineDesc& desc )                      = 0;
+    virtual SwapchainPtr       createSwapchain( const NativeObject& Ptr, const SwapchainDesc& desc = {} ) = 0;
+    virtual CommandListPtr     createCommandList( const CommandListDesc& desc )                              = 0;
+    virtual TexturePtr         createTexture( const TextureDesc& desc, const void* initialData = nullptr )   = 0;
+    virtual BufferPtr          createBuffer( const BufferDesc& desc, const void* initialData = nullptr )     = 0;
+    virtual PipelineLayoutPtr  createPipelineLayout( const PipelineLayoutDesc& desc )                        = 0;
+    virtual GraphicPipelinePtr createGraphicPipeline( const GraphicPipelineDesc& desc )                      = 0;
+    virtual ComputePipelinePtr createComputePipeline( const ComputePipelineDesc& desc )                      = 0;
 
     virtual void executeCommandLists( const std::vector<ICommandList*>& lists, QueueType workingQueue, Fence& frameFence ) = 0;
     virtual void waitForFrame( const Fence& frameFence, QueueType workingQueue )                                           = 0;

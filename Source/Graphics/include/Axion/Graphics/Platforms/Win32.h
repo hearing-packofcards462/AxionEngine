@@ -9,7 +9,7 @@ namespace Graphics {
 /**
  * @brief Handle definition for Win32-specific window implementation.
  */
-DEFINE_SHARED_HANDLE_FOR_TYPE( IWin32Window, Win32Window )
+DEFINE_SHARED_PTR_FOR_TYPE( IWin32Window, Win32Window )
 
 /**
  * @brief Interface for a Win32 window implementation.
@@ -29,12 +29,12 @@ protected:
  * @param hInstance The Win32 application instance handle.
  * @param settings  Window configuration (name, size, fullscreen, etc.).
  *
- * @return A handle to the created window object.
+ * @return A ptr to the created window object.
  *
  * @see IWindow
  * @see Win32Window
  */
-WindowHandle createWindowForWin32( HINSTANCE hInstance, const WindowSettings& settings = {} );
+WindowPtr createWindowForWin32( HINSTANCE hInstance, const WindowSettings& settings = {} );
 
 } // namespace Renderer
 

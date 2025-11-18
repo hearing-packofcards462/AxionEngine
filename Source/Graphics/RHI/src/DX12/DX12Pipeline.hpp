@@ -6,7 +6,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_COM_HANDLE_FOR_TYPE( DX12PipelineLayout, DX12PipelineLayout )
+DEFINE_COM_PTR_FOR_TYPE( DX12PipelineLayout, DX12PipelineLayout )
 
 class DX12PipelineLayout final : public RefCounter<IPipelineLayout>
 {
@@ -29,7 +29,7 @@ private:
     ComPtr<ID3D12RootSignature> _rootSignature;
 };
 
-DEFINE_COM_HANDLE_FOR_TYPE( DX12GraphicPipeline, DX12GraphicPipeline )
+DEFINE_COM_PTR_FOR_TYPE( DX12GraphicPipeline, DX12GraphicPipeline )
 
 class DX12GraphicPipeline : public RefCounter<IGraphicPipeline>
 {
@@ -51,7 +51,7 @@ private:
     ComPtr<ID3D12PipelineState> _pso;
 };
 
-DEFINE_COM_HANDLE_FOR_TYPE( DX12ComputePipeline, DX12ComputePipeline )
+DEFINE_COM_PTR_FOR_TYPE( DX12ComputePipeline, DX12ComputePipeline )
 
 class DX12ComputePipeline : public RefCounter<IComputePipeline>
 {

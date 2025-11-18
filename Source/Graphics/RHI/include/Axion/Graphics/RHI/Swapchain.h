@@ -6,7 +6,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_COM_HANDLE_FOR_TYPE( ISwapchain, Swapchain )
+DEFINE_COM_PTR_FOR_TYPE( ISwapchain, Swapchain )
 
 /**
  * @brief Interface representing a generic rendering swapchain.
@@ -73,7 +73,7 @@ public:
      *
      * @return Const reference to the vector that contains them. Careful ! References of the images can be modified.
      */
-    virtual const std::vector<TextureHandle>& getSwapImages() = 0;
+    virtual const std::vector<TexturePtr>& getSwapImages() = 0;
 
     /**
      * @brief Reconfigures the swapchain with new description.

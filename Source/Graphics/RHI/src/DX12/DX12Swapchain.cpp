@@ -63,7 +63,7 @@ const ISwapchain::Description& DX12Swapchain::getDescription() {
     return _desc;
 }
 
-const std::vector<TextureHandle>& DX12Swapchain::getSwapImages() {
+const std::vector<TexturePtr>& DX12Swapchain::getSwapImages() {
     return _swapImages;
 }
 
@@ -124,7 +124,7 @@ void DX12Swapchain::updateImages() {
 
         DX12Texture* rawBackBufferTexture = new DX12Texture( backBuffer, desc, ctx, false );
         rawBackBufferTexture->stateTracker().setState( ResourceState::Present );
-        TextureHandle backBufferTexture;
+        TexturePtr backBufferTexture;
         backBufferTexture.attach( rawBackBufferTexture );
         // Assign to vector (old element will be released automatically)
         // _swapImages[i] = std::move( backBufferTexture );

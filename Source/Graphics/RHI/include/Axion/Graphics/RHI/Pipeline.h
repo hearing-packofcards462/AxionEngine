@@ -16,7 +16,7 @@ struct ShaderModule {
     // For DX12 this should be a contiguous DXIL blob (VS/PS)
 };
 
-DEFINE_COM_HANDLE_FOR_TYPE( IPipelineLayout, PipelineLayout )
+DEFINE_COM_PTR_FOR_TYPE( IPipelineLayout, PipelineLayout )
 
 class IPipelineLayout : public IResource
 {
@@ -36,7 +36,7 @@ public:
 
 typedef IPipelineLayout::Description PipelineLayoutDesc;
 
-DEFINE_COM_HANDLE_FOR_TYPE( IGraphicPipeline, GraphicPipeline )
+DEFINE_COM_PTR_FOR_TYPE( IGraphicPipeline, GraphicPipeline )
 
 class IGraphicPipeline : public IResource
 {
@@ -120,7 +120,7 @@ public:
 
 typedef IGraphicPipeline::Description GraphicPipelineDesc;
 
-DEFINE_COM_HANDLE_FOR_TYPE( IComputePipeline, ComputePipeline )
+DEFINE_COM_PTR_FOR_TYPE( IComputePipeline, ComputePipeline )
 
 class IComputePipeline : public IResource
 {

@@ -46,7 +46,7 @@ const CommandListDesc& DX12CommandList::getDescription() const {
     return _desc;
 }
 
-void DX12CommandList::barrier( const TextureHandle& texture, ResourceState newState ) {
+void DX12CommandList::barrier( const TexturePtr& texture, ResourceState newState ) {
 
     auto& tracker = static_cast<DX12Texture*>( texture.get() )->stateTracker();
 
@@ -63,7 +63,7 @@ void DX12CommandList::barrier( const TextureHandle& texture, ResourceState newSt
     tracker.setState( newState );
 }
 
-void DX12CommandList::barrier( const BufferHandle& buffer, ResourceState newState ) {
+void DX12CommandList::barrier( const BufferPtr& buffer, ResourceState newState ) {
 
     auto& tracker = static_cast<DX12Buffer*>( buffer.get() )->stateTracker();
 
@@ -80,7 +80,7 @@ void DX12CommandList::barrier( const BufferHandle& buffer, ResourceState newStat
     tracker.setState( newState );
 }
 
-void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearValue& clearValue ) {
+void DX12CommandList::clearTexture( const TexturePtr& texture, const ClearValue& clearValue ) {
     auto*              dxTex = static_cast<DX12Texture*>( texture.get() );
     const TextureDesc& desc  = dxTex->getDescription();
 
@@ -112,8 +112,8 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
         barrier( texture, ResourceState::UnorderedAccess );
         float vals[4] = { clearValue.color.x, clearValue.color.y, clearValue.color.z, clearValue.color.w };
         // _cmdList->ClearUnorderedAccessViewFloat(
-        //     dxTex->getGPUUAV(), // GPU handle
-        //     dxTex->getCPUUAV(), // CPU handle
+        //     dxTex->getGPUUAV(), // GPU Ptr
+        //     dxTex->getCPUUAV(), // CPU Ptr
         //     dxTex->getNativeObject(ObjectTypes::DX12_Resource),
         //     vals,
         //     0,
@@ -123,7 +123,7 @@ void DX12CommandList::clearTexture( const TextureHandle& texture, const ClearVal
     }
 }
 
-void DX12CommandList::copyBuffer( const BufferHandle& dst, const BufferHandle& src, ulong numBytes, ulong dstOffset, ulong srcOffset ) {
+void DX12CommandList::copyBuffer( const BufferPtr& dst, const BufferPtr& src, ulong numBytes, ulong dstOffset, ulong srcOffset ) {
 
     barrier( dst, ResourceState::CopyDest );
     barrier( src, ResourceState::CopySource );

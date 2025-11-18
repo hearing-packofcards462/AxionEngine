@@ -5,7 +5,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DEFINE_COM_HANDLE_FOR_TYPE( IDX12Device, DX12Device )
+DEFINE_COM_PTR_FOR_TYPE( IDX12Device, DX12Device )
 
 class IDX12Device : public IDevice
 {
@@ -48,7 +48,7 @@ protected:
 
 typedef IDX12Device::Description  DX12DeviceDesc;
 typedef IDX12Device::FeatureLevel DX12DeviceFeatureLevel;
-DX12DeviceHandle                  createDX12Device( const DX12DeviceDesc& desc );
+DX12DevicePtr                  createDX12Device( const DX12DeviceDesc& desc );
 
 } // namespace Graphics::RHI
 

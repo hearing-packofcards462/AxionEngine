@@ -810,9 +810,9 @@ private:
     friend class Ptr;
 };
 
-#define DEFINE_COM_HANDLE_FOR_TYPE( type, clean ) \
+#define DEFINE_COM_PTR_FOR_TYPE( type, clean ) \
     class type;                                   \
-    typedef Ptr<type> clean##Handle;
+    typedef Ptr<type> clean##Ptr;
 
 } // namespace RHI
 } // namespace Graphics

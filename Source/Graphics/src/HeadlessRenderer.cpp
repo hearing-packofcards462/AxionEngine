@@ -6,7 +6,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-RendererHandle Graphics::createHeadlessRenderer( const RendererSettings& settings ) {
+RendererPtr Graphics::createHeadlessRenderer( const RendererSettings& settings ) {
     auto rnd = NEW_S( HeadlessRenderer )( settings );
     AXION_LOG_INFO( Logger::Module::GFX, "Headless Renderer Created Succesfully" );
     AXION_LOG_INFO( Logger::Module::GFX, rnd->toString() );
@@ -73,11 +73,11 @@ bool HeadlessRenderer::isHeadless() {
     return true;
 }
 
-const WindowHandle& HeadlessRenderer::getWindow() {
+const WindowPtr& HeadlessRenderer::getWindow() {
     return nullptr;
 }
 
-const RHI::DeviceHandle& HeadlessRenderer::getDevice() const {
+const RHI::DevicePtr& HeadlessRenderer::getDevice() const {
     return _device;
 }
 
@@ -90,11 +90,15 @@ std::string HeadlessRenderer::toString() const {
         _setts.debugMode );
 }
 
-void HeadlessRenderer::setWindow( const WindowHandle& wnd ) {
+void HeadlessRenderer::setWindow( const WindowPtr& wnd ) {
 }
 
 const RendererSettings& HeadlessRenderer::getSettings() const {
     return _setts;
+}
+
+const GPUResourcePoolPtr& HeadlessRenderer::getResourcePool() const {
+    return nullptr;
 }
 
 } // namespace Graphics

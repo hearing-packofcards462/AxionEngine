@@ -51,16 +51,16 @@
     inline bool operator==( T a, uint32_t b ) { return uint32_t( a ) == b; }                                                \
     inline bool operator!=( T a, uint32_t b ) { return uint32_t( a ) != b; }
 
-#define DEFINE_SHARED_HANDLE_FOR_TYPE( type, clean ) \
+#define DEFINE_SHARED_PTR_FOR_TYPE( type, clean ) \
     class type;                                      \
-    typedef std::shared_ptr<type> clean##Handle;
+    typedef std::shared_ptr<type> clean##Ptr;
 
 #define NEW_S( type ) \
     std::make_shared<type>
 
-#define DEFINE_UNIQUE_HANDLE_FOR_TYPE( type, clean ) \
+#define DEFINE_UNIQUE_PTR_FOR_TYPE( type, clean ) \
     class type;                                      \
-    typedef std::unique_ptr<type> clean##Handle;
+    typedef std::unique_ptr<type> clean##Ptr;
 
 #define NEW_U( type ) \
     std::make_unique<type>

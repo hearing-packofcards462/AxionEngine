@@ -10,9 +10,9 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics::RHI {
 
-DX12DeviceHandle RHI::createDX12Device( const DX12DeviceDesc& desc ) {
+DX12DevicePtr RHI::createDX12Device( const DX12DeviceDesc& desc ) {
     DX12Device*      raw = new DX12Device( desc );
-    DX12DeviceHandle dev;
+    DX12DevicePtr dev;
     dev.attach( raw );
     return dev;
 }
@@ -54,66 +54,66 @@ DX12Device::~DX12Device() {
     AXION_LOG_INFO( Logger::Module::RHI, "Destroying DX12 Device [{}]", _desc.debugName );
 }
 
-SwapchainHandle DX12Device::createSwapchain( const NativeObject& handle, const SwapchainDesc& desc ) {
+SwapchainPtr DX12Device::createSwapchain( const NativeObject& Ptr, const SwapchainDesc& desc ) {
     HWND hwnd = nullptr;
-    switch ( handle.integer )
+    switch ( Ptr.integer )
     {
         case ObjectTypes::WIN32_WINDOW:
 #ifdef _WIN32
-            hwnd = handle;
+            hwnd = Ptr;
 #endif
             break;
         case ObjectTypes::GLFW_Window:
-            hwnd = glfwGetWin32Window( handle );
+            hwnd = glfwGetWin32Window( Ptr );
             break;
         default:
             AXION_LOG_ERROR( Logger::Module::RHI, "Unsupported platform for swapchain" );
             throw AxionException( "Unsupported platform for swapchain" );
     }
     DX12Swapchain*  raw = new DX12Swapchain( hwnd, _ctx, desc );
-    SwapchainHandle swp;
+    SwapchainPtr swp;
     swp.attach( raw );
     return swp;
 }
 
-CommandListHandle DX12Device::createCommandList( const CommandListDesc& desc ) {
+CommandListPtr DX12Device::createCommandList( const CommandListDesc& desc ) {
     DX12CommandList*  raw = new DX12CommandList( _ctx.device, desc );
-    CommandListHandle cmd;
+    CommandListPtr cmd;
     cmd.attach( raw );
     return cmd;
 }
 
-TextureHandle DX12Device::createTexture( const TextureDesc& desc, const void* initialData ) {
+TexturePtr DX12Device::createTexture( const TextureDesc& desc, const void* initialData ) {
     DX12Texture*  raw = new DX12Texture( desc, _ctx, initialData );
-    TextureHandle tex;
+    TexturePtr tex;
     tex.attach( raw );
     return tex;
 }
 
-BufferHandle RHI::DX12Device::createBuffer( const BufferDesc& desc, const void* initialData ) {
+BufferPtr RHI::DX12Device::createBuffer( const BufferDesc& desc, const void* initialData ) {
     DX12Buffer*  raw = new DX12Buffer( desc, _ctx, initialData );
-    BufferHandle buff;
+    BufferPtr buff;
     buff.attach( raw );
     return buff;
 }
 
-PipelineLayoutHandle DX12Device::createPipelineLayout( const PipelineLayoutDesc& desc ) {
+PipelineLayoutPtr DX12Device::createPipelineLayout( const PipelineLayoutDesc& desc ) {
     DX12PipelineLayout*  raw = new DX12PipelineLayout( _ctx.device, desc );
-    PipelineLayoutHandle layout;
+    PipelineLayoutPtr layout;
     layout.attach( raw );
     return layout;
 }
 
-GraphicPipelineHandle DX12Device::createGraphicPipeline( const GraphicPipelineDesc& desc ) {
+GraphicPipelinePtr DX12Device::createGraphicPipeline( const GraphicPipelineDesc& desc ) {
     DX12GraphicPipeline*  raw = new DX12GraphicPipeline( _ctx.device, desc );
-    GraphicPipelineHandle pip;
+    GraphicPipelinePtr pip;
     pip.attach( raw );
     return pip;
 }
 
-ComputePipelineHandle DX12Device::createComputePipeline( const ComputePipelineDesc& desc ) {
+ComputePipelinePtr DX12Device::createComputePipeline( const ComputePipelineDesc& desc ) {
     DX12ComputePipeline*  raw = new DX12ComputePipeline( _ctx.device, desc );
-    ComputePipelineHandle pip;
+    ComputePipelinePtr pip;
     pip.attach( raw );
     return pip;
 }

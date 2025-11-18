@@ -1,4 +1,5 @@
 #pragma once
+#include "Axion/Graphics/GPUResourcePool.h"
 #include "Axion/Graphics/GPUSceneView.h"
 #include "Axion/Graphics/Platforms/Window.h"
 #include "Axion/Graphics/RHI/Device.h"
@@ -7,7 +8,7 @@ AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-DEFINE_SHARED_HANDLE_FOR_TYPE( IRenderer, Renderer )
+DEFINE_SHARED_PTR_FOR_TYPE( IRenderer, Renderer )
 
 class IRenderer
 {
@@ -26,18 +27,21 @@ public:
     virtual void destroy()                              = 0;
     virtual bool isHeadless()                           = 0;
 
-    virtual const WindowHandle&      getWindow()                          = 0;
-    virtual void                     setWindow( const WindowHandle& wnd ) = 0;
-    virtual const Settings&          getSettings() const                  = 0;
-    virtual const RHI::DeviceHandle& getDevice() const                    = 0;
+    virtual const WindowPtr& getWindow()                       = 0;
+    virtual void             setWindow( const WindowPtr& wnd ) = 0;
+    virtual const Settings&  getSettings() const               = 0;
+
+    virtual const GPUResourcePoolPtr& getResourcePool() const = 0;
+
+    virtual const RHI::DevicePtr& getDevice() const = 0;
 
     virtual std::string toString() const = 0;
 };
 
 typedef IRenderer::Settings RendererSettings;
 
-RendererHandle createRenderer( const WindowHandle& wnd, const RendererSettings& settings = {} );
-RendererHandle createHeadlessRenderer( const RendererSettings& settings = {} );
+RendererPtr createRenderer( const WindowPtr& wnd, const RendererSettings& settings = {} );
+RendererPtr createHeadlessRenderer( const RendererSettings& settings = {} );
 
 } // namespace Graphics
 
