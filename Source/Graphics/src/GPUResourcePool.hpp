@@ -11,27 +11,33 @@ public:
     explicit GPUResourcePool( RHI::IDevice* device );
     ~GPUResourcePool() override;
 
-    ~IGPUResourcePool() = default;
-
+    // BUFFER
     BufferHandle                registerBuffer( const RHI::BufferDesc& desc, const void* initialData = nullptr, const std::string& name = "" ) override;
-    RHI::BufferPtr& const*      getBuffer( BufferHandle handle ) const override;
+    RHI::BufferPtr&             getBuffer( BufferHandle handle )  override;
     std::optional<BufferHandle> findBuffer( const std::string& name ) const override;
     void                        destroyBuffer( BufferHandle handle ) override;
+    
+    // TEXTURE
 
-    virtual void clear() = 0;
+    virtual void clear() override;
 
 private:
-    RHI::IDevice*      m_device = nullptr;
+    RHI::IDevice*      _device = nullptr;
     mutable std::mutex _mutex;
 
     template <typename T>
     struct ResourceRecord {
-        T           buffer = nullptr;
+        T           ptr = nullptr;
         std::string name;
         bool        alive = false;
     };
-    std::vector<ResourceRecord<RHI::BufferPtr>> m_buffers;
+
+    //Buffers
+    std::vector<ResourceRecord<RHI::BufferPtr>>   _buffers;
     std::unordered_map<std::string, BufferHandle> _nameToHandle;
+    //Textures
+    // std::vector<ResourceRecord<RHI::TexturePtr>>   _textures;
+    // std::unordered_map<std::string, TextureHandle> _nameToHandle;
 };
 
 } // namespace Graphics

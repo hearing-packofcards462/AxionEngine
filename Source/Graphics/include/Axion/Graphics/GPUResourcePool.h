@@ -17,7 +17,7 @@ public:
     virtual ~IGPUResourcePool() = default;
 
     virtual BufferHandle                registerBuffer( const RHI::BufferDesc& desc, const void* initialData = nullptr, const std::string& name = "" ) = 0;
-    virtual RHI::BufferPtr&             getBuffer( BufferHandle handle ) const                                                                         = 0;
+    virtual RHI::BufferPtr&             getBuffer( BufferHandle handle )                                                                          = 0;
     virtual std::optional<BufferHandle> findBuffer( const std::string& name ) const                                                                    = 0;
     virtual void                        destroyBuffer( BufferHandle handle )                                                                           = 0;
 

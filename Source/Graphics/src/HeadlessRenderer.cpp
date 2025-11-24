@@ -97,9 +97,10 @@ const RendererSettings& HeadlessRenderer::getSettings() const {
     return _setts;
 }
 
-const GPUResourcePoolPtr& HeadlessRenderer::getResourcePool() const {
-    return nullptr;
+IGPUResourcePool& HeadlessRenderer::getResourcePool() {
+    return *_resourcePool.get();
 }
+
 
 } // namespace Graphics
 

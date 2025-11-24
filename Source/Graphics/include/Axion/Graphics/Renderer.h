@@ -31,7 +31,7 @@ public:
     virtual void             setWindow( const WindowPtr& wnd ) = 0;
     virtual const Settings&  getSettings() const               = 0;
 
-    virtual const GPUResourcePoolPtr& getResourcePool() const = 0;
+    virtual IGPUResourcePool& getResourcePool() = 0;
 
     virtual const RHI::DevicePtr& getDevice() const = 0;
 

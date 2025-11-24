@@ -21,7 +21,7 @@ public:
     virtual void             setWindow( const WindowPtr& wnd ) override;
     virtual const Settings&  getSettings() const override;
 
-    virtual const GPUResourcePoolPtr& getResourcePool() const override;
+    virtual IGPUResourcePool& getResourcePool() override;
 
     virtual const RHI::DevicePtr& getDevice() const override;
 
@@ -31,14 +31,17 @@ public:
 
 private:
     RendererSettings _setts;
-
+    // RHI -- GPU
     RHI::DevicePtr          _device      = nullptr;
     RHI::CommandListPtr     _commandList = nullptr;
     std::vector<RHI::Fence> _frameFences;
-
+    // GPU
+    GPUResourcePoolPtr    _resourcePool = nullptr;
     std::vector<GPUFrame> _frames;
-    uint                  _currentFrame = 0;
-    const uint            _FRAMES_IN_FLIGHT;
+    // Query
+    uint       _currentFrame = 0;
+    const uint _FRAMES_IN_FLIGHT;
+
 };
 
 } // namespace Graphics

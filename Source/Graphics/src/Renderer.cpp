@@ -39,7 +39,10 @@ Renderer::Renderer( const WindowPtr& wnd, const RendererSettings& settings )
     _swapchain      = _device->createSwapchain( wnd->getNativeObject(), { .size = wnd->getSettings().size, .imageCount = _FRAMES_IN_FLIGHT, .presentMode = settings.presentMode } );
     _resizeCbHandle = _wnd->onResize().subscribe( [this]( const Event::WindowResizeEvent& e ) { this->windowCallback( { e.width, e.height } ); } );
     _commandList    = _device->createCommandList( { .queueType = RHI::QueueType::Graphics, .numFrames = _FRAMES_IN_FLIGHT, .debugName = "Graphics Command List" } );
-    
+
+
+    //Init Resource Pool
+    _resourcePool = NEW_U( GPUResourcePool )( _device.get() );  
 }
 
 Renderer::~Renderer() {
@@ -133,8 +136,8 @@ const RendererSettings& Renderer::getSettings() const {
     return _setts;
 }
 
-const GPUResourcePoolPtr& Renderer::getResourcePool() const {
-    return _resourcePool;
+IGPUResourcePool& Renderer::getResourcePool() {
+    return *_resourcePool.get();
 }
 
 void Renderer::windowCallback( const Extent2D& newSize ) {

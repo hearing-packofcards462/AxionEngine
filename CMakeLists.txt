@@ -5,6 +5,13 @@
 cmake_minimum_required(VERSION 3.16)
 project(AxionEngine)
 
+
+# =========================================================================
+# User Configuration
+# =========================================================================
+option(AXION_ENABLE_TESTS "Enable building of the tests" ON)
+
+
 # Solo para MSVC, usa /std:c++20
 if (MSVC)
     add_compile_options(/W4 /Zi /std:c++20)
@@ -51,3 +58,11 @@ add_subdirectory(Source/Editor)
 # =========================================================================
 # Resources Configuration
 # =========================================================================
+
+
+# =========================================================================
+# Tests Configuration
+# =========================================================================
+if(AXION_ENABLE_TESTS)
+    add_subdirectory(Tests)
+endif()

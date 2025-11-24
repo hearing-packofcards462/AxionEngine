@@ -1,99 +1,96 @@
-// #include "ResourcePool.h"
+#include "GPUResourcePool.hpp"
 
-// AXION_NAMESPACE_BEGIN
-// namespace Graphics {
+AXION_NAMESPACE_BEGIN
+namespace Graphics {
 
-// ResourcePool::ResourcePool(IDevice* device)
-//     : m_device(device)
-// {}
+GPUResourcePool::GPUResourcePool( RHI::IDevice* device )
+    : _device( device ) {
+    AXION_LOG_INFO( Logger::Module::GFX, "Renderer's Resource Pool Created Succesfully" );
+}
 
-// ResourcePool::~ResourcePool()
-// {
-//     clear();
-// }
+GPUResourcePool::~GPUResourcePool() {
+    clear();
+    AXION_LOG_INFO( Logger::Module::GFX, "Destroying Renderer's Resource Pool" );
+}
 
-// BufferHandle ResourcePool::registerBuffer(const BufferDesc& desc,
-//                                           const void* initialData,
-//                                           const std::string& name)
-// {
-//     std::scoped_lock lock(m_mutex);
+BufferHandle GPUResourcePool::registerBuffer( const RHI::BufferDesc& desc, const void* initialData, const std::string& name ) {
+    std::scoped_lock lock( _mutex );
 
-//     IBuffer* buffer = m_device->createBuffer(desc, initialData);
+    auto buffer = _device->createBuffer( desc, initialData );
 
-//     // Find free slot
-//     uint32_t id = UINT32_MAX;
-//     for (uint32_t i = 0; i < m_buffers.size(); ++i) {
-//         if (!m_buffers[i].alive) {
-//             id = i;
-//             m_buffers[i] = { buffer, name, true };
-//             break;
-//         }
-//     }
+    // Find free slot
+    uint id = UINT32_MAX;
+    for ( uint i = 0; i < _buffers.size(); ++i )
+    {
+        if ( !_buffers[i].alive )
+        {
+            id          = i;
+            _buffers[i] = { buffer, name, true };
+            break;
+        }
+    }
+    // Or append new one
+    if ( id == UINT32_MAX )
+    {
+        id = (uint)_buffers.size();
+        _buffers.push_back( { buffer, name, true } );
+    }
+    // Map name
+    if ( !name.empty() )
+        _nameToHandle[name] = { id };
 
-//     // Or append new one
-//     if (id == UINT32_MAX) {
-//         id = (uint32_t)m_buffers.size();
-//         m_buffers.push_back({ buffer, name, true });
-//     }
+    return BufferHandle { id };
+}
 
-//     // Map name
-//     if (!name.empty())
-//         m_nameToHandle[name] = { id };
+RHI::BufferPtr& GPUResourcePool::getBuffer( BufferHandle handle ) {
+    std::scoped_lock lock( _mutex );
 
-//     return BufferHandle{ id };
-// }
+    ResourceRecord<RHI::BufferPtr>& rec = _buffers[handle.id];
+    return rec.ptr; // Return a dummy/empty BufferPtr or throw an exception
+}
 
-// IBuffer* ResourcePool::getBuffer(BufferHandle handle) const
-// {
-//     std::scoped_lock lock(m_mutex);
+std::optional<BufferHandle> GPUResourcePool::findBuffer( const std::string& name ) const {
+    std::scoped_lock lock( _mutex );
 
-//     if (!handle.isValid() || handle.id >= m_buffers.size())
-//         return nullptr;
+    auto it = _nameToHandle.find( name );
+    if ( it == _nameToHandle.end() )
+        return std::nullopt;
+    return it->second;
+}
 
-//     const BufferRecord& rec = m_buffers[handle.id];
-//     return rec.alive ? rec.buffer : nullptr;
-// }
+void GPUResourcePool::destroyBuffer( BufferHandle handle ) {
+    std::scoped_lock lock( _mutex );
 
-// std::optional<BufferHandle> ResourcePool::findBuffer(const std::string& name) const
-// {
-//     std::scoped_lock lock(m_mutex);
+    if ( !handle.isValid() || handle.id >= _buffers.size() )
+        return;
 
-//     auto it = m_nameToHandle.find(name);
-//     if (it == m_nameToHandle.end()) return std::nullopt;
-//     return it->second;
-// }
+    auto& rec = _buffers[handle.id];
+    if ( rec.alive )
+    {
+        // rec.ptr   = nullptr;
+        // delete rec.ptr;
+        // rec.alive = false;
 
-// void ResourcePool::destroyBuffer(BufferHandle handle)
-// {
-//     std::scoped_lock lock(m_mutex);
+        if ( !rec.name.empty() )
+            _nameToHandle.erase( rec.name );
+    }
+}
 
-//     if (!handle.isValid() || handle.id >= m_buffers.size()) return;
+void GPUResourcePool::clear() {
+    // std::scoped_lock lock( _mutex );
 
-//     auto& rec = m_buffers[handle.id];
-//     if (rec.alive) {
-//         delete rec.buffer;
-//         rec.buffer = nullptr;
-//         rec.alive = false;
+    // for ( auto& rec : _buffers )
+    // {
+    //     if ( rec.alive )
+    //     {
+    //         delete rec.ptr;
+    //         rec.ptr   = nullptr;
+    //         rec.alive = false;
+    //     }
+    // }
 
-//         if (!rec.name.empty())
-//             m_nameToHandle.erase(rec.name);
-//     }
-// }
+    // _nameToHandle.clear();
+}
 
-// void ResourcePool::clear()
-// {
-//     std::scoped_lock lock(m_mutex);
-
-//     for (auto& rec : m_buffers) {
-//         // if (rec.alive) {
-//             delete rec.buffer;
-//             rec.buffer = nullptr;
-//             rec.alive = false;
-//         }
-//     }
-
-//     m_nameToHandle.clear();
-// }
-
-// } // namespace Graphics
-// AXION_NAMESPACE_END
+} // namespace Graphics
+AXION_NAMESPACE_END
