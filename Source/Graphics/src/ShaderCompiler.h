@@ -1,5 +1,6 @@
 #pragma once
 #include <Axion/Graphics/RHI/Common.h>
+#include <Axion/Graphics/ShaderRegistry.h>
 #include <slang/slang-com-ptr.h>
 #include <slang/slang.h>
 
@@ -12,18 +13,6 @@ using namespace slang;
 class SlangShaderCompiler
 {
 public:
-    enum NativeFormat : uchar
-    {
-        DXIL,
-        SPIR_V,
-        GLSL
-    };
-    struct CompileDescription {
-        std::string              path;         // source file
-        std::vector<std::string> includePaths; // for Slang `import`
-        NativeFormat             format = DXIL;
-    };
-
     void begin();
     bool compileFile( const CompileDescription& desc, std::vector<uchar>& outCode );
     void end();

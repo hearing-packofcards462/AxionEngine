@@ -39,6 +39,7 @@ BufferHandle GPUResourcePool::registerBuffer( const RHI::BufferDesc& desc, const
     if ( !name.empty() )
         _nameToHandle[name] = { id };
 
+
     return BufferHandle { id };
 }
 

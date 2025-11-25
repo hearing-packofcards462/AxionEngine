@@ -13,7 +13,7 @@ class HeadlessRenderer : public IRenderer
 public:
     virtual ~HeadlessRenderer();
     virtual void render() override;
-    virtual void render( const GPUSceneView& gpuScene ) override;
+    // virtual void render( const GPUSceneView& gpuScene ) override;
     virtual void destroy() override;
     virtual bool isHeadless() override;
 

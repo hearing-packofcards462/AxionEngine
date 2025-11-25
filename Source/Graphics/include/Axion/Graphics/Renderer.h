@@ -1,6 +1,5 @@
 #pragma once
 #include "Axion/Graphics/GPUResourcePool.h"
-#include "Axion/Graphics/GPUSceneView.h"
 #include "Axion/Graphics/Platforms/Window.h"
 #include "Axion/Graphics/RHI/Device.h"
 
@@ -23,7 +22,7 @@ public:
 
     virtual ~IRenderer()                                = default;
     virtual void render()                               = 0;
-    virtual void render( const GPUSceneView& gpuScene ) = 0;
+    // virtual void render( const GPUSceneView& gpuScene ) = 0;
     virtual void destroy()                              = 0;
     virtual bool isHeadless()                           = 0;
 

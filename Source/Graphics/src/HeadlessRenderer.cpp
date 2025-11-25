@@ -62,8 +62,8 @@ void HeadlessRenderer::render() {
     _device->waitForFrame( _frameFences[_currentFrame], RHI::QueueType::Graphics );
 }
 
-void HeadlessRenderer::render( const GPUSceneView& gpuScene ) {
-}
+// void HeadlessRenderer::render( const GPUSceneView& gpuScene ) {
+// }
 
 void HeadlessRenderer::destroy() {
     _device->queueWaitIdle( RHI::QueueType::Graphics, _frameFences[_currentFrame] );

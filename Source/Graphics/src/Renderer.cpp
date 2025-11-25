@@ -85,8 +85,8 @@ void Renderer::render() {
     _device->waitForFrame( _frameFences[_currentFrame], RHI::QueueType::Graphics );
 }
 
-void Renderer::render( const GPUSceneView& gpuScene ) {
-}
+// void Renderer::render( const GPUSceneView& gpuScene ) {
+// }
 
 void Renderer::destroy() {
     _device->queueWaitIdle( RHI::QueueType::Graphics, _frameFences[_currentFrame] );
