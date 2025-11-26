@@ -1,9 +1,11 @@
 #pragma once
-#include <Axion/Graphics/GPUResourcePool.h>
 #include <Axion/Graphics/RHI/Device.h>
+#include <Axion/Graphics/Subsystems/GPUResourcePool.h>
 
 AXION_NAMESPACE_BEGIN
 namespace Graphics {
+
+DEFINE_UNIQUE_PTR_FOR_TYPE( GPUResourcePool, GPUResourcePool )
 
 class GPUResourcePool final : public IGPUResourcePool
 {
@@ -13,10 +15,10 @@ public:
 
     // BUFFER
     BufferHandle                registerBuffer( const RHI::BufferDesc& desc, const void* initialData = nullptr, const std::string& name = "" ) override;
-    RHI::BufferPtr&             getBuffer( BufferHandle handle )  override;
+    RHI::BufferPtr&             getBuffer( BufferHandle handle ) override;
     std::optional<BufferHandle> findBuffer( const std::string& name ) const override;
     void                        destroyBuffer( BufferHandle handle ) override;
-    
+
     // TEXTURE
 
     virtual void clear() override;
@@ -32,12 +34,12 @@ private:
         bool        alive = false;
     };
 
-    //Buffers
+    // Buffers
     std::vector<ResourceRecord<RHI::BufferPtr>>   _buffers;
     std::unordered_map<std::string, BufferHandle> _nameToHandle;
-    //Textures
-    // std::vector<ResourceRecord<RHI::TexturePtr>>   _textures;
-    // std::unordered_map<std::string, TextureHandle> _nameToHandle;
+    // Textures
+    //  std::vector<ResourceRecord<RHI::TexturePtr>>   _textures;
+    //  std::unordered_map<std::string, TextureHandle> _nameToHandle;
 };
 
 } // namespace Graphics

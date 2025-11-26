@@ -8,29 +8,31 @@ static const std::vector<uchar> INVALID_BYTECODE = {};
 
 ShaderRegistry::ShaderRegistry() {
     AXION_LOG_INFO( Logger::Module::GFX, "Renderer's Shader Registry Created Succesfully" );
+    _compiler.begin();
 }
 
 ShaderRegistry::~ShaderRegistry() {
     AXION_LOG_INFO( Logger::Module::GFX, "Destroying Renderer's Shader Registry" );
+    _compiler.end();
 }
 
 ShaderHandle ShaderRegistry::registerShader( const ShaderDesc& desc, const std::string& name ) {
-    std::scoped_lock lock( _mutex );
+    // std::scoped_lock lock( _mutex );
 
     uint id = UINT32_MAX;
-    for ( uint i = 0; i < _buffers.size(); ++i )
+    for ( uint i = 0; i < _shaders.size(); ++i )
     {
         if ( !_shaders[i].alive )
         {
             id          = i;
-            _shaders[i] = { {}, desc, /*std::move( layout )*/, name, ShaderState::Uncompiled, true };
+            _shaders[i] = { {}, desc, /*std::move( layout ),*/ name, ShaderState::Uncompiled, true };
             break;
         }
     }
     if ( id == UINT32_MAX )
     {
         id = (uint)_shaders.size();
-        _shaders.push_back( {}, desc, /*std::move( layout )*/, name, ShaderState::Uncompiled, true );
+        _shaders.push_back( { {}, desc, /*std::move( layout ),*/ name, ShaderState::Uncompiled, true } );
     }
     // Map name
     if ( !name.empty() )
@@ -41,14 +43,31 @@ ShaderHandle ShaderRegistry::registerShader( const ShaderDesc& desc, const std::
 }
 
 const std::vector<uchar>& ShaderRegistry::getBytecode( ShaderHandle handle ) const {
-    std::scoped_lock lock( _mutex );
+    // std::scoped_lock lock( _mutex );
+    if ( handle.id >= _shaders.size() )
+    {
+        AXION_LOG_ERROR( Logger::Module::GFX, "Accessing invalid ShaderHandle ID: {}", handle.id );
+        return INVALID_BYTECODE;
+    }
 
-    auto& shader = _shaders[handle.id];
-    return shader.bytecode;
+    auto& record = _shaders[handle.id];
+    if ( !record.alive )
+    {
+        AXION_LOG_ERROR( Logger::Module::GFX, "Accessing dead ShaderHandle: {}", record.name );
+        return INVALID_BYTECODE;
+    }
+
+    if ( record.bytecode.empty() )
+    {
+        AXION_LOG_WARN( Logger::Module::GFX, "Shader bytecode is empty (not compiled yet?): {}", record.name );
+        return INVALID_BYTECODE;
+    }
+
+    return record.bytecode;
 }
 
 std::optional<ShaderHandle> ShaderRegistry::findShader( const std::string& name ) const {
-    std::scoped_lock lock( _mutex );
+    // std::scoped_lock lock( _mutex );
 
     auto it = _nameToHandle.find( name );
     if ( it == _nameToHandle.end() )
@@ -57,27 +76,23 @@ std::optional<ShaderHandle> ShaderRegistry::findShader( const std::string& name 
 }
 
 const std::vector<uchar>& ShaderRegistry::compileShader( ShaderHandle handle ) {
-    std::scoped_lock lock( _mutex );
+    // std::scoped_lock lock( _mutex );
 
-    // Validación básica
-    if ( handle >= _shaders.size() )
-        return _emptyBytecode; // Retorna un vector estatico vacio o lanza excepcion
+    if ( handle.id >= _shaders.size() )
+    {
+        AXION_LOG_ERROR( Logger::Module::GFX, "Accessing invalid ShaderHandle ID: {}", handle.id );
+        return INVALID_BYTECODE;
+    }
 
-    auto& record = _shaders[handle];
+    auto& record = _shaders[handle.id];
     if ( record.state == ShaderState::Ready )
     {
         return record.bytecode;
     }
 
-    AXION_LOG_INFO( Logger::Module::GFX, "Compiling Shader: {} with path: {}", name, record.de );
+    AXION_LOG_INFO( Logger::Module::GFX, "Compiling Shader: {} with path: {}", record.name, record.desc.path );
 
-    // Usamos SlangCompileDesc adapter si es necesario
-    SlangShaderCompiler::CompileDescription slangDesc;
-    slangDesc.path         = record.desc.path;
-    slangDesc.includePaths = record.desc.includePaths;
-    slangDesc.format       = (SlangShaderCompiler::NativeFormat)record.desc.format; // Cast o conversión
-
-    if ( _compiler.compileFile( slangDesc, record.bytecode ) )
+    if ( _compiler.compileFile( record.desc, record.bytecode ) )
     {
         record.state = ShaderState::Ready;
     } else
@@ -88,6 +103,17 @@ const std::vector<uchar>& ShaderRegistry::compileShader( ShaderHandle handle ) {
     }
 
     return record.bytecode;
+}
+
+const std::vector<uchar>& ShaderRegistry::compileShader( const std::string& name ) {
+    auto handleOpt = findShader( name );
+
+    if ( !handleOpt.has_value() )
+    {
+        AXION_LOG_ERROR( Logger::Module::GFX, "Cannot compile shader, name not found: {}", name );
+        return INVALID_BYTECODE;
+    }
+    return compileShader( *handleOpt );
 }
 
 void ShaderRegistry::compileAllShaders( bool async ) {

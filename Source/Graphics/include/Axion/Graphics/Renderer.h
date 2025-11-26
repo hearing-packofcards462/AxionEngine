@@ -1,7 +1,8 @@
 #pragma once
-#include "Axion/Graphics/GPUResourcePool.h"
 #include "Axion/Graphics/Platforms/Window.h"
 #include "Axion/Graphics/RHI/Device.h"
+#include "Axion/Graphics/Subsystems/GPUResourcePool.h"
+#include "Axion/Graphics/Subsystems/ShaderRegistry.h"
 
 AXION_NAMESPACE_BEGIN
 
@@ -20,21 +21,24 @@ public:
         Format        outputFormat  = Format::RGBA8_UNORM; // Only if windowed
     };
 
-    virtual ~IRenderer()                                = default;
-    virtual void render()                               = 0;
-    // virtual void render( const GPUSceneView& gpuScene ) = 0;
-    virtual void destroy()                              = 0;
-    virtual bool isHeadless()                           = 0;
+    virtual ~IRenderer() = default;
 
-    virtual const WindowPtr& getWindow()                       = 0;
-    virtual void             setWindow( const WindowPtr& wnd ) = 0;
-    virtual const Settings&  getSettings() const               = 0;
+    virtual void render() = 0;
 
-    virtual IGPUResourcePool& getResourcePool() = 0;
+    // Subsystems
+    virtual IGPUResourcePool& resources() = 0;
+    virtual IShaderRegistry&  shaders()   = 0;
 
-    virtual const RHI::DevicePtr& getDevice() const = 0;
+    // Getters
+    virtual const WindowPtr&      getWindow()                       = 0;
+    virtual void                  setWindow( const WindowPtr& wnd ) = 0;
+    virtual const Settings&       getSettings() const               = 0;
+    virtual const RHI::DevicePtr& getDevice() const                 = 0;
 
+    // Query
+    virtual void        destroy()        = 0;
     virtual std::string toString() const = 0;
+    virtual bool        isHeadless()     = 0;
 };
 
 typedef IRenderer::Settings RendererSettings;

@@ -2,6 +2,8 @@
 #pragma once
 #include "Axion/Graphics/Renderer.h"
 #include "GPUFrame.hpp"
+#include "Subsystems/GPUResourcePool.hpp"
+#include "Subsystems/ShaderRegistry.hpp"
 
 AXION_NAMESPACE_BEGIN
 
@@ -21,7 +23,8 @@ public:
     virtual void             setWindow( const WindowPtr& wnd ) override;
     virtual const Settings&  getSettings() const override;
 
-    virtual IGPUResourcePool& getResourcePool() override;
+    virtual IGPUResourcePool& resources() override;
+    virtual IShaderRegistry&  shaders() override;
 
     virtual const RHI::DevicePtr& getDevice() const override;
 
@@ -35,13 +38,15 @@ private:
     RHI::DevicePtr          _device      = nullptr;
     RHI::CommandListPtr     _commandList = nullptr;
     std::vector<RHI::Fence> _frameFences;
-    // GPU
+    // GPU Resources
     GPUResourcePoolPtr    _resourcePool = nullptr;
     std::vector<GPUFrame> _frames;
+    // Pipelines & shaders
+    ShaderRegistryPtr _shaderRegistry = nullptr;
+    // PipelineRegistryPtr   _pipRegistry    = nullptr;
     // Query
     uint       _currentFrame = 0;
     const uint _FRAMES_IN_FLIGHT;
-
 };
 
 } // namespace Graphics

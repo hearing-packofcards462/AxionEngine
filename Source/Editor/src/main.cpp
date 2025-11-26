@@ -3,7 +3,6 @@
 #include "Axion/Graphics/Platforms/GLFW.h"
 #include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/Renderer.h"
-#include "Axion/Graphics/ShaderProgram/ShaderCompiler.h"
 
 USING_AXION_NAMESPACE
 
@@ -22,13 +21,7 @@ int main( /*int argc, char* argv[]*/ ) {
                                                       .bufferingType = Graphics::BufferingType::Double,
                                                       .presentMode   = Graphics::PresentMode::Vsync } );
 
-        Axion::Graphics::SlangShaderCompiler compiler;
-        compiler.begin();
-        Axion::Graphics::SlangCompileDesc compileDesc {};
-        compileDesc.path = AXION_SHADER_DIR "/Slang/TestShader.slang";
-        std::vector<uchar> outDXILCode;
-        compiler.compileFile( compileDesc, outDXILCode );
-        compiler.end();
+       
 
         while ( !wnd->shouldClose() )
         {

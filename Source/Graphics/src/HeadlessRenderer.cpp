@@ -97,10 +97,13 @@ const RendererSettings& HeadlessRenderer::getSettings() const {
     return _setts;
 }
 
-IGPUResourcePool& HeadlessRenderer::getResourcePool() {
+IGPUResourcePool& HeadlessRenderer::resources() {
     return *_resourcePool.get();
 }
 
+IShaderRegistry& HeadlessRenderer::shaders() {
+    return *_shaderRegistry.get();
+}
 
 } // namespace Graphics
 

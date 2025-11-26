@@ -3,7 +3,6 @@
 #include "Axion/Graphics/Platforms/GLFW.h"
 #include "Axion/Graphics/Platforms/Win32.h"
 #include "Axion/Graphics/Renderer.h"
-#include "Axion/Graphics/ShaderProgram/ShaderCompiler.h"
 
 USING_AXION_NAMESPACE
 
@@ -23,21 +22,21 @@ int main( /*int argc, char* argv[]*/ ) {
                                                       .presentMode   = Graphics::PresentMode::Vsync } );
 
         // Declare Reources
-        auto& res        = rnd->getResourcePool();
+        auto& res        = rnd->resources();
         auto  bufferTest = res.registerBuffer( { .size = 16, .debugName = "TestBuffer" }, nullptr, "TestBuffer" );
         auto  bufferPtr  = res.getBuffer( bufferTest );
         // AXION_LOG_INFO( Logger::Module::Editor, "Buffer Count: {}", bufferPtr->getRefCount() );
         res.destroyBuffer( bufferTest );
 
         // Shader
+        auto& shaders = rnd->shaders();
+        shaders.shader( "TestShader" ).asDXIL().path( AXION_SHADER_DIR "/Slang/TestShader.slang" ).load();
+        shaders.compileShader( "TestShader" );
 
-        Axion::Graphics::SlangShaderCompiler compiler;
-        compiler.begin();
-        Axion::Graphics::SlangCompileDesc compileDesc {};
-        compileDesc.path = AXION_SHADER_DIR "/Slang/TestShader.slang";
-        std::vector<uchar> outDXILCode;
-        compiler.compileFile( compileDesc, outDXILCode );
-        compiler.end();
+        // Pipelines
+        // rnd->pipelines().graphics( "PBR" ).vs( "PBR_Vertex" ) // El motor busca el blob Y la reflexión
+        //     .ps( "PBR_Pixel" )
+        //     .create();
 
         while ( !wnd->shouldClose() )
         {

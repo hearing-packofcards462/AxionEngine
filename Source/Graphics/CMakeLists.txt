@@ -7,8 +7,8 @@ file(GLOB COMMON_SOURCES
     "src/*.cpp"
     "src/Platforms/*.cpp"
     "src/Platforms/*.cpp"
-    "src/ShaderProgram/*.hpp"
-    "src/ShaderProgram/*.cpp"
+    "src/Subsystems/*.hpp"
+    "src/Subsystems/*.cpp"
 )
 
 # ADD SUB-MODULE FOR RHI

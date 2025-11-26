@@ -1,11 +1,11 @@
-#include <Axion/Graphics/ShaderProgram/ShaderCompiler.h>
+#include "ShaderCompiler.h"
 #include <filesystem>
 
 AXION_NAMESPACE_BEGIN
 
 namespace Graphics {
 
-void SlangShaderCompiler::begin() {
+void ShaderCompiler::begin() {
     // 1. Create Only One Slang Session for performance
     // CAUTION ! MONO-THREAD
     if ( !_globalSession )
@@ -16,7 +16,7 @@ void SlangShaderCompiler::begin() {
     }
 }
 
-bool SlangShaderCompiler::compileFile( const CompileDescription& desc, std::vector<uchar>& outCode ) {
+bool ShaderCompiler::compileFile( const ShaderDesc& desc, std::vector<uchar>& outCode ) {
 
     AXION_LOG_ASSERT( _globalSession, Logger::Module::GFX, "No Slang Compile Session Active" );
 
@@ -25,27 +25,46 @@ bool SlangShaderCompiler::compileFile( const CompileDescription& desc, std::vect
     TargetDesc targetDesc;
     switch ( desc.format )
     {
-        case NativeFormat::DXIL:
-            targetDesc.format = SLANG_DXIL;
+        case Shader::NativeFormat::DXIL:
+            targetDesc.format  = SLANG_DXIL;
+            targetDesc.profile = _globalSession->findProfile( "sm_6_0" );
             break;
-        case NativeFormat::SPIR_V:
-            targetDesc.format = SLANG_SPIRV;
+        case Shader::NativeFormat::SPIR_V:
+            targetDesc.format  = SLANG_SPIRV;
+            targetDesc.profile = _globalSession->findProfile( "glsl_450" );
             break;
-        case NativeFormat::GLSL:
-            targetDesc.format = SLANG_GLSL;
+        case Shader::NativeFormat::GLSL:
+            targetDesc.format  = SLANG_GLSL;
+            targetDesc.profile = _globalSession->findProfile( "glsl_450" );
             break;
         default:
             break;
     }
     // --- Fill Slang import/include paths ---
-    std::vector<const char*> includePtrs;
-    includePtrs.reserve( desc.includePaths.size() );
+    std::filesystem::path shaderFilePath( desc.path );
+    if ( !std::filesystem::exists( shaderFilePath ) )
+    {
+        AXION_LOG_ERROR( Logger::Module::Shader, "Shader file not found: {}", desc.path );
+        return false;
+    }
 
+    std::string shaderDir  = shaderFilePath.parent_path().string();
+    std::string moduleName = shaderFilePath.stem().string();
+
+    std::vector<const char*> includePtrs;
+    includePtrs.reserve( desc.includePaths.size() + 1 ); // +1 para el directorio del shader
+
+    // Añadimos el directorio donde está el propio shader para que Slang lo encuentre
+    includePtrs.push_back( shaderDir.c_str() );
+
+    // Añadimos los includes extra del usuario
     for ( auto& p : desc.includePaths )
         includePtrs.push_back( p.c_str() );
 
     sessionDesc.searchPaths     = includePtrs.data();
     sessionDesc.searchPathCount = (SlangInt)includePtrs.size();
+    sessionDesc.targets         = &targetDesc;
+    sessionDesc.targetCount     = 1;
 
     // PreprocessorMacroDesc fancyFlag    = { "ENABLE_FANCY_FEATURE", "1" };
     // sessionDesc.preprocessorMacros     = &fancyFlag;
@@ -54,9 +73,7 @@ bool SlangShaderCompiler::compileFile( const CompileDescription& desc, std::vect
     Slang::ComPtr<ISession> session;
     _globalSession->createSession( sessionDesc, session.writeRef() );
 
-    Slang::ComPtr<IBlob> diagnostics;
-    std::string          moduleName =
-        std::filesystem::path( desc.path ).stem().string();
+    Slang::ComPtr<IBlob>   diagnostics;
     Slang::ComPtr<IModule> module( session->loadModule( moduleName.c_str(), diagnostics.writeRef() ) );
 
     if ( diagnostics )
@@ -70,15 +87,30 @@ bool SlangShaderCompiler::compileFile( const CompileDescription& desc, std::vect
         return false;
     }
 
+    // --------------------------------------------------------
+    // FETCH ENTRY POINT
+    // --------------------------------------------------------
     Slang::ComPtr<slang::IEntryPoint> entryPoint;
+
+    if ( !desc.entryPoint.empty() )
     {
-        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        module->findEntryPointByName( "computeMain", entryPoint.writeRef() );
-        if ( !entryPoint )
+        module->findEntryPointByName( desc.entryPoint.c_str(), entryPoint.writeRef() );
+    } else
+    {
+        AXION_LOG_WARN( Logger::Module::Shader, "Entry Point not Defined, automatically looking for an entry point" );
+        if ( module->getDefinedEntryPointCount() > 0 )
         {
-            AXION_LOG_ERROR( Logger::Module::Shader, "Slang failed to get entry point", desc.path.c_str() );
-            return false;
+            module->getDefinedEntryPoint( 0, entryPoint.writeRef() );
         }
+    }
+
+    if ( !entryPoint )
+    {
+        AXION_LOG_ERROR( Logger::Module::Shader,
+                         "Failed to find entry point '{}' in {}",
+                         desc.entryPoint.empty() ? "(auto)" : desc.entryPoint,
+                         desc.path );
+        return false;
     }
 
     IComponentType*                      components[] = { module, entryPoint };
@@ -136,10 +168,8 @@ bool SlangShaderCompiler::compileFile( const CompileDescription& desc, std::vect
     AXION_LOG_INFO( Logger::Module::Shader, "Compiled {} bytes of native shader code", nativeCode->getBufferSize() );
 
     return true;
-
-    // slang::ProgramLayout* layout = module->getLayout();
 }
-void SlangShaderCompiler::end() {
+void ShaderCompiler::end() {
     _globalSession = nullptr;
 }
 } // namespace Graphics
